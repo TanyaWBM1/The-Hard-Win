@@ -60,6 +60,7 @@ at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
 
 | Date | Change | Source | Action we took / need |
 |---|---|---|---|
+| 2026-06-30 | Verified the GitHub Actions backstop workflow by manual/API dispatch. Run completed successfully and filed quarterly reminder issue #1 with required labels, dedup banner, and mandatory outcome list. Issue closed as a test artifact with an explanatory comment. | manual test (workflow_dispatch) | **Backstop automation confirmed operational** before the first scheduled quarterly cycle. |
 | 2026-06-30 | Moved all hashtags from the first comment into the **caption** (best-practice placement). First comment now = opener + follow CTA only. | this playbook | Done (Supabase: caption carries ≤5 tags, `first_comment` is tag-free). |
 | 2026-06-30 | Logged 2 more official sources (Original Content Guidelines + Creators Blog). Adopted an internal **Originality Standard** (≥3 original layers; public-domain images = raw material only, never finished content). | creators.instagram.com/original-content-guidelines | Our renders are original; PD images used only inside materially-transformed posts. NOT claiming "Instagram counts PD+overlay as original." |
 | 2026-06-30 | Trimmed all first-comments to **≤5 hashtags** (dropped `#RealHistory` from 24 Black-history cards) to comply with the cap. | this playbook | Done (data in Supabase `posts.first_comment`). Comment→caption placement move still pending. |
