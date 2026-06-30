@@ -1,0 +1,52 @@
+# Opens a quarterly tracking issue to review Instagram's rules against the playbook.
+#
+# NOTE: the *actual* automated review (web research + playbook update + PR) runs as a
+# scheduled Claude cloud routine. This workflow is a lightweight backstop reminder that
+# files a tracking issue on the same cadence, in case the cloud routine is ever paused.
+name: Quarterly platform review reminder
+
+on:
+  schedule:
+    # 13:00 UTC (~9am ET) on the 1st of Jan, Apr, Jul, Oct
+    - cron: "0 13 1 1,4,7,10 *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  open-review-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const d = new Date();
+            const ym = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+            const title = `Quarterly IG platform review — ${ym}`;
+            const body = [
+              "Re-verify Instagram's rules against `skills/the-hard-win/INSTAGRAM_PLAYBOOK.md` and update it.",
+              "",
+              "- [ ] Hashtag cap (still 5? total regardless of placement?)",
+              "- [ ] Placement (caption vs first comment)",
+              "- [ ] Caption length / keyword indexing",
+              "- [ ] Reach signals",
+              "- [ ] Reels / image specs",
+              "- [ ] Links & mentions",
+              "- [ ] Original-content rules / recommendation eligibility",
+              "- [ ] Anything affecting post-daily.js, the renderer, or caption/tag format",
+              "",
+              "Official sources first:",
+              "- https://creators.instagram.com/grow/algorithms-and-ranking",
+              "- https://creators.instagram.com/original-content-guidelines",
+              "- https://creators.instagram.com/blog",
+              "",
+              "Update CURRENT RULES + Last verified / next review dates + a dated CHANGELOG row.",
+            ].join("\n");
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ["platform-review", "quarterly-check", "instagram"],
+            });
