@@ -30,19 +30,29 @@ at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
   for recommendations to non-followers**. Accounts *primarily* posting unoriginal content can be
   left out of recommendations entirely (recover by being mostly-original over a 30-day window).
 - **Original = self-created or *materially* edited** (added text, narration, graphics, design that
-  substantially transforms it). **The Hard Win is on the safe side:** every card is an original
-  render (`render_card.py`), and the off-day cards are public-domain images **materially edited**
-  with our own text + design. Keep it that way — no posting of others' unedited work, no foreign
-  app watermarks.
+  substantially transforms the source). Minimal overlays, watermarks, crops, or speed changes do
+  NOT qualify.
+- **The Hard Win's own originality standard (stricter than the minimum — do NOT rely on "Instagram
+  will count it as original"):** treat public-domain images as **raw material, not finished
+  content**. A post is safe for our standard only when we add meaningful editorial transformation —
+  original research, original captioning, original layout, original typography, source-aware
+  context, and a distinct Hard Win visual frame. A light overlay, repost, screenshot, watermark,
+  or minimal crop is not enough.
+- **ORIGINALITY STANDARD (internal rule):** every Hard Win post must contain **at least three
+  original contribution layers** drawn from: researched context · original written framing · custom
+  visual composition · source citation / provenance note · original caption · design treatment.
+  Public-domain imagery may be used **only as source material inside a materially transformed
+  post** — never posted as-is or with a caption merely slapped on top.
 
 ### What this means for The Hard Win (our config)
 - **Never exceed 5 hashtags per post**, counting caption + comment combined.
 - **Lead the caption with the hook and real keywords** (person's name, what they did, year) —
   that's our biggest search lever, and our cards already do this.
-- **Hashtag count: COMPLIANT (≤5 per card).** Trimmed 2026-06-30 — dropped `#RealHistory`
-  from the 24 cards that had 6, so every first comment now carries ≤5 tags.
-- **Open decision:** hashtags currently live in the **first comment**; current best practice
-  favors the **caption**. Not yet moved (no cap risk either way) — pending decision.
+- **Hashtag count: COMPLIANT (≤5 per card).** Trimmed 2026-06-30 (dropped `#RealHistory` from
+  the 24 cards that had 6); ≤5 tags total per post.
+- **Hashtag placement: CAPTION (done 2026-06-30).** The ≤5 tags now ride at the end of each
+  caption; the first comment carries only the motivational opener + follow CTA (no tags).
+  Caption + comment combined stays ≤5.
 
 ---
 
@@ -50,7 +60,8 @@ at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
 
 | Date | Change | Source | Action we took / need |
 |---|---|---|---|
-| 2026-06-30 | Logged 2 more official sources (Original Content Guidelines + Creators Blog). Reviewed originality rules: unoriginal content loses non-follower recommendations. | creators.instagram.com/original-content-guidelines | None — our cards are original renders; off-day = materially-edited PD images. Compliant. |
+| 2026-06-30 | Moved all hashtags from the first comment into the **caption** (best-practice placement). First comment now = opener + follow CTA only. | this playbook | Done (Supabase: caption carries ≤5 tags, `first_comment` is tag-free). |
+| 2026-06-30 | Logged 2 more official sources (Original Content Guidelines + Creators Blog). Adopted an internal **Originality Standard** (≥3 original layers; public-domain images = raw material only, never finished content). | creators.instagram.com/original-content-guidelines | Our renders are original; PD images used only inside materially-transformed posts. NOT claiming "Instagram counts PD+overlay as original." |
 | 2026-06-30 | Trimmed all first-comments to **≤5 hashtags** (dropped `#RealHistory` from 24 Black-history cards) to comply with the cap. | this playbook | Done (data in Supabase `posts.first_comment`). Comment→caption placement move still pending. |
 | 2026-06-30 | Confirmed **5-hashtag hard cap** (live since Dec 2025), enforced regardless of caption vs comment placement; **caption now the recommended home**; keyword captions out-perform hashtag-heavy posts. | Social Media Today; Later; Hootsuite 2026 data | TRIM all cards to ≤5 tags; decide caption vs comment placement (pending user). |
 | 2025-12 (reported) | Instagram began enforcing the **5-tag cap** platform-wide (after earlier 3-tag tests). | Social Media Today | — |
