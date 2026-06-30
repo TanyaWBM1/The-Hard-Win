@@ -1,0 +1,6 @@
+project_id = "tpirzpvvhhgpnwsrbbnh"
+
+# Cron calls refresh-ig-token without a Supabase JWT; it is protected instead by the
+# shared REFRESH_TRIGGER_SECRET header it checks itself.
+[functions.refresh-ig-token]
+verify_jwt = false

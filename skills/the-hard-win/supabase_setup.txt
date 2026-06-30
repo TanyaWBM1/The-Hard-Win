@@ -1,0 +1,20 @@
+-- The Hard Win — add the "real person + receipt" card columns to the posts table.
+-- Run ONCE in your The Hard Win Supabase project:
+--   Dashboard -> SQL Editor -> New query -> paste ALL of this -> Run.
+-- Safe to re-run (uses IF NOT EXISTS). Leaves your existing columns untouched.
+
+alter table posts add column if not exists subject_name text;
+alter table posts add column if not exists hook         text;
+alter table posts add column if not exists body         text;
+alter table posts add column if not exists copy_today   text;
+alter table posts add column if not exists receipt      text;
+alter table posts add column if not exists image_credit text;
+alter table posts add column if not exists error_note   text;
+
+-- The old card format made `quote` NOT NULL; the new person-format rows don't use
+-- it. Make it optional so new cards can insert. (No error if already nullable.)
+alter table posts alter column quote drop not null;
+
+-- Already present, reused as-is: id, caption, image_url, status, scheduled_date,
+-- posted_at, ig_post_id, created_at. (The old quote/explanation columns are left
+-- in place and simply go unused by the new card format.)

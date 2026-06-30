@@ -1,0 +1,23 @@
+{
+  "description": "Card record schema for The Hard Win. One JSON file per candidate person, captured during research. A human approves before anything posts. The canonical template is ../worked_example.json (Toni Morrison).",
+  "fields": {
+    "subject_name": "Real person's name (verified spelling).",
+    "hook": "Headline. Plain, calm, true. No hype, no emojis.",
+    "body": "2-4 sentences. Only dated, sourced facts.",
+    "copy_today": "One concrete action drawn from the person's REAL constraint (not a generic platitude).",
+    "receipt": "The source line shown on the card (mono, bottom): name the work + the 2+ confirming sources in plain words.",
+    "sources": "Array of >= 2 independent reputable source strings (e.g. 'Encyclopaedia Britannica - Toni Morrison', 'Howard University archive'). Stays in this file as the audit trail; the posts table has no sources column.",
+    "image_credit": "Credit string if an image is used, else empty. Never Getty/Bettmann/agency images sold as free.",
+    "caption": "Instagram caption (hashtags allowed; not drawn on the card).",
+    "palette": "teal | navy | plum | violet | forest | black. Assigned by rotation so the feed never repeats two days running.",
+    "status": "pending (drafts only) | cut (removed; needs cut_reason). Scripts never set 'approved' or 'posted'.",
+    "cut_reason": "If status=cut: why it was dropped (e.g. central claim contested/unratified)."
+  },
+  "hard_rules_enforced_by_validate": [
+    ">= 2 independent reputable sources",
+    "no quote-mill / pirate / agency-image sources (brainyquote, azquotes, pinterest, wikiquote, sci-hub, libgen, getty, bettmann)",
+    "no emojis in card text fields",
+    "palette must be one the locked renderer accepts",
+    "status must be 'pending' to load; 'cut' records are logged, never loaded"
+  ]
+}

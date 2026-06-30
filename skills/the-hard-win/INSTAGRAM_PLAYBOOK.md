@@ -1,0 +1,81 @@
+# Instagram Platform Playbook — The Hard Win
+
+A **living record** of Instagram's current rules that affect how we caption, tag, and post.
+Platform behavior changes often, so this file is **reviewed every quarter** (see the schedule
+at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
+
+> Anything in here can go stale. Trust the **Last verified** date and the cited sources, not memory.
+
+---
+
+## CURRENT RULES — last verified: 2026-06-30  ·  next review: 2026-10-01
+
+### Hashtags
+- **HARD CAP: 5 hashtags maximum per post / Reel.** Rolled out **December 2025**,
+  platform-*enforced* (not a suggestion). More than 5 → Instagram blocks the post or
+  silently strips the extra tags.
+- **The cap is total, regardless of placement** — caption, first comment, or split between
+  them, you get **5 total**. Putting tags in the comment does **not** buy extra slots.
+- **Placement: caption is now recommended.** Equal to comments for classification, but the
+  caption indexes keywords + tags the moment you publish; there's no longer any advantage to
+  putting them in the first comment.
+- **Hashtags are a classification signal, not a reach lever.** Mosseri/Meta have repeatedly
+  said more hashtags ≠ more reach. Use **3–5 relevant, specific** tags, not generic ones.
+- **Keywords beat hashtags for discovery.** Instagram search indexes caption *text*, so a
+  clear, keyword-rich caption (names, dates, topic) drives more search/reach than tags do.
+
+### What this means for The Hard Win (our config)
+- **Never exceed 5 hashtags per post**, counting caption + comment combined.
+- **Lead the caption with the hook and real keywords** (person's name, what they did, year) —
+  that's our biggest search lever, and our cards already do this.
+- **Open decision (2026-06-30):** hashtags currently live in the first comment (≤? per card).
+  Best practice now favors the caption. See changelog 2026-06-30 entry / pending fix.
+
+---
+
+## CHANGELOG (newest first)
+
+| Date | Change | Source | Action we took / need |
+|---|---|---|---|
+| 2026-06-30 | Confirmed **5-hashtag hard cap** (live since Dec 2025), enforced regardless of caption vs comment placement; **caption now the recommended home**; keyword captions out-perform hashtag-heavy posts. | Social Media Today; Later; Hootsuite 2026 data | TRIM all cards to ≤5 tags; decide caption vs comment placement (pending user). |
+| 2025-12 (reported) | Instagram began enforcing the **5-tag cap** platform-wide (after earlier 3-tag tests). | Social Media Today | — |
+
+---
+
+## SOURCES (re-check these each review)
+- **PRIMARY (official):** Instagram Creators — Algorithms & Ranking:
+  https://creators.instagram.com/grow/algorithms-and-ranking  ← start here every quarter;
+  it's the official hub and links out to the detailed "how Instagram works" / signals articles.
+- Social Media Today — "Instagram Implements New Limits on Hashtag Use":
+  https://www.socialmediatoday.com/news/instagram-implements-new-limits-on-hashtag-use/808309/
+- Later — "Ultimate Guide to Using Instagram Hashtags (2026)":
+  https://later.com/blog/ultimate-guide-to-using-instagram-hashtags/
+- Also check each quarter: **Adam Mosseri** (@mosseri) posts/AMA and the official
+  **@creators** account + Instagram Help Center, for any new caption, hashtag, alt-text,
+  link, or Reels-length rules.
+
+---
+
+## QUARTERLY REVIEW CHECKLIST
+Run on the schedule below (or by hand). For each item: confirm still-true, note any change in
+the changelog with a dated source, and flag anything that breaks our current posting setup.
+
+1. **Hashtag cap** — still 5? changed number? still enforced regardless of placement?
+2. **Placement** — caption vs first comment: any new official guidance?
+3. **Caption** — character limit, keyword/SEO indexing, first-line truncation point.
+4. **Reach levers** — what Instagram/Mosseri currently say drives distribution (saves, sends,
+   watch time, originality, etc.).
+5. **Reels / image specs** — any change to recommended dimensions, length, or cover rules.
+6. **Links & mentions** — rules on links in bio/caption/comments, @mention limits, CTAs.
+7. **Anything that would change `post-daily.js`, the card renderer, or our caption/tag format.**
+
+After reviewing: update **Last verified** + **next review** dates above, add a changelog row,
+and if anything breaks our setup, surface it (don't silently "fix" content — flag for human approval).
+
+---
+
+## HOW THE QUARTERLY CHECK RUNS
+A scheduled agent re-runs this checklist every quarter (≈1st of Jan/Apr/Jul/Oct), updates this
+file, and reports any change that affects The Hard Win. See the project memory
+(`thehardwin-ig-automation`) for the schedule's exact definition. If the schedule is ever
+removed, this checklist can be run by hand at any time.

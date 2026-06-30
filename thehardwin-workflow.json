@@ -1,0 +1,43 @@
+{
+  "name": "The Hard Win - Daily IG Post",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "15 9 * * *" }
+          ]
+        }
+      },
+      "id": "a1111111-1111-1111-1111-111111111111",
+      "name": "Every day at 9:15am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "command": "node \"C:\\Users\\Billionaire Mind DT\\ig-daily-cards\\post-daily.js\""
+      },
+      "id": "b2222222-2222-2222-2222-222222222222",
+      "name": "Post next card",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [520, 300]
+    }
+  ],
+  "connections": {
+    "Every day at 9:15am": {
+      "main": [
+        [
+          { "node": "Post next card", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "America/New_York",
+    "executionOrder": "v1"
+  }
+}
