@@ -5,6 +5,10 @@ title: "Quarterly IG platform review — YYYY-MM"
 labels: ["platform-review", "quarterly-check", "instagram"]
 ---
 
+> **Reminder/backstop only.** The cloud review routine is the PRIMARY review. If the cloud
+> routine already ran this quarter (opened a PR/review), **close this issue as a duplicate and
+> link that PR** — do not run a second review unless the first one failed.
+
 Work through the checklist in
 `skills/the-hard-win/INSTAGRAM_PLAYBOOK.md` and update it (CURRENT RULES, Last verified /
 next review dates, and a dated CHANGELOG row). Flag anything that breaks the posting setup.
@@ -25,8 +29,9 @@ next review dates, and a dated CHANGELOG row). Flag anything that breaks the pos
 - https://creators.instagram.com/blog
 - @mosseri / @creators / Instagram Help Center
 
-## Outcome (pick one)
-- [ ] No change needed
-- [ ] Playbook updated
-- [ ] Posting workflow needs update
-- [ ] Hashtag / content templates need update
+## Outcome (record exactly ONE)
+- [ ] No Change
+- [ ] Playbook Updated
+- [ ] Templates Updated
+- [ ] Workflow Updated
+- [ ] Review Failed / Needs Manual Follow-Up

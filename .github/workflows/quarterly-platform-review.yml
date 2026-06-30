@@ -25,6 +25,10 @@ jobs:
             const ym = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
             const title = `Quarterly IG platform review — ${ym}`;
             const body = [
+              "⚠️ Reminder/backstop only — the cloud review routine is the PRIMARY review.",
+              "If the cloud routine already opened a PR this quarter, close this issue as a duplicate and link that PR.",
+              "Do not run two reviews for the same quarter unless the first one failed.",
+              "",
               "Re-verify Instagram's rules against `skills/the-hard-win/INSTAGRAM_PLAYBOOK.md` and update it.",
               "",
               "- [ ] Hashtag cap (still 5? total regardless of placement?)",
@@ -42,6 +46,8 @@ jobs:
               "- https://creators.instagram.com/blog",
               "",
               "Update CURRENT RULES + Last verified / next review dates + a dated CHANGELOG row.",
+              "",
+              "End with exactly ONE recorded outcome: No Change | Playbook Updated | Templates Updated | Workflow Updated | Review Failed / Needs Manual Follow-Up.",
             ].join("\n");
             await github.rest.issues.create({
               owner: context.repo.owner,

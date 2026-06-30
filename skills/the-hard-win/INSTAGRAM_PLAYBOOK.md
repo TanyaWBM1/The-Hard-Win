@@ -104,10 +104,23 @@ the changelog with a dated source, and flag anything that breaks our current pos
 After reviewing: update **Last verified** + **next review** dates above, add a changelog row,
 and if anything breaks our setup, surface it (don't silently "fix" content — flag for human approval).
 
+**Every quarterly review must end with exactly ONE recorded outcome** (in the changelog row AND
+the PR/issue) — never a loose "checked it" note:
+**No Change · Playbook Updated · Templates Updated · Workflow Updated · Review Failed / Needs Manual Follow-Up.**
+
 ---
 
 ## HOW THE QUARTERLY CHECK RUNS
-A scheduled agent re-runs this checklist every quarter (≈1st of Jan/Apr/Jul/Oct), updates this
-file, and reports any change that affects The Hard Win. See the project memory
-(`thehardwin-ig-automation`) for the schedule's exact definition. If the schedule is ever
-removed, this checklist can be run by hand at any time.
+Two things fire on the same cadence (≈1st of Jan/Apr/Jul/Oct):
+- **Cloud review routine — PRIMARY.** A scheduled Claude cloud agent re-runs this checklist,
+  updates this file, and opens a **PR** with the changes. This is the real review.
+- **GitHub Action — reminder/backstop ONLY.** Files a tracking *issue* on the same cadence
+  (`.github/workflows/quarterly-platform-review.yml`), in case the routine is ever paused.
+
+**Quarterly Review Rule (avoid duplicate noise):** The GitHub Action is a reminder/backstop only;
+the cloud review routine is the primary review process. **If both run in the same quarter, close
+the GitHub Action issue by linking to the cloud routine's PR/review.** Do **not** run two separate
+platform reviews for the same quarter unless the first review **failed**.
+
+See the project memory (`thehardwin-ig-automation`) for the schedule's exact definition. If the
+schedule is ever removed, this checklist can be run by hand at any time.
