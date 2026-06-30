@@ -28,8 +28,10 @@ at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
 - **Never exceed 5 hashtags per post**, counting caption + comment combined.
 - **Lead the caption with the hook and real keywords** (person's name, what they did, year) —
   that's our biggest search lever, and our cards already do this.
-- **Open decision (2026-06-30):** hashtags currently live in the first comment (≤? per card).
-  Best practice now favors the caption. See changelog 2026-06-30 entry / pending fix.
+- **Hashtag count: COMPLIANT (≤5 per card).** Trimmed 2026-06-30 — dropped `#RealHistory`
+  from the 24 cards that had 6, so every first comment now carries ≤5 tags.
+- **Open decision:** hashtags currently live in the **first comment**; current best practice
+  favors the **caption**. Not yet moved (no cap risk either way) — pending decision.
 
 ---
 
@@ -37,6 +39,7 @@ at the bottom) and the changelog tracks every upgrade/downgrade/policy shift.
 
 | Date | Change | Source | Action we took / need |
 |---|---|---|---|
+| 2026-06-30 | Trimmed all first-comments to **≤5 hashtags** (dropped `#RealHistory` from 24 Black-history cards) to comply with the cap. | this playbook | Done (data in Supabase `posts.first_comment`). Comment→caption placement move still pending. |
 | 2026-06-30 | Confirmed **5-hashtag hard cap** (live since Dec 2025), enforced regardless of caption vs comment placement; **caption now the recommended home**; keyword captions out-perform hashtag-heavy posts. | Social Media Today; Later; Hootsuite 2026 data | TRIM all cards to ≤5 tags; decide caption vs comment placement (pending user). |
 | 2025-12 (reported) | Instagram began enforcing the **5-tag cap** platform-wide (after earlier 3-tag tests). | Social Media Today | — |
 
