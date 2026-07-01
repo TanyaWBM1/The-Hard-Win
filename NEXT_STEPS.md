@@ -49,6 +49,12 @@ After **9:15 AM ET** (the poster runs every other day):
 > - Nothing was deleted — the code, Supabase tables, and docs remain. The steps below are how
 >   to *resume* if Tanya restarts it later.
 
+**While paused, here's the one handy tool:** run `npm run posts:summary` for a **read-only**
+list of your posts with their like/comment **counts**. It shows *which* posts have comment
+activity (marked 💬) so you know which ones to open in the Instagram app and reply to by hand.
+It only reads your posts — it can't read comment text (that's the Development-mode limit), and
+it never posts or changes anything.
+
 The system can draft replies to comments on your posts, but **nothing posts until you approve
 it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
 
