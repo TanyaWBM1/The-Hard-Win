@@ -1,0 +1,66 @@
+[
+  {
+    "ig_post_id": "SAMPLE_POST_1",
+    "parent_media_id": "SAMPLE_POST_1",
+    "ig_comment_id": "SAMPLE_C_001",
+    "commenter_username": "runner_maya",
+    "comment_text": "This one hit me today. Needed it. Thank you 🙏",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_1",
+    "parent_media_id": "SAMPLE_POST_1",
+    "ig_comment_id": "SAMPLE_C_002",
+    "commenter_username": "coach_devon",
+    "comment_text": "Is the part about her childhood illness actually true? Source?",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_1",
+    "parent_media_id": "SAMPLE_POST_1",
+    "ig_comment_id": "SAMPLE_C_003",
+    "commenter_username": "history_buff88",
+    "comment_text": "This date is wrong, you clearly didn't fact-check this at all.",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_2",
+    "parent_media_id": "SAMPLE_POST_2",
+    "ig_comment_id": "SAMPLE_C_004",
+    "commenter_username": "quiet_grind",
+    "comment_text": "I've been going through a really hard season and this helped me keep going.",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_2",
+    "parent_media_id": "SAMPLE_POST_2",
+    "ig_comment_id": "SAMPLE_C_005",
+    "commenter_username": "get_rich_now",
+    "comment_text": "Check my page for free followers and crypto tips, link in bio to earn $$$",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_2",
+    "parent_media_id": "SAMPLE_POST_2",
+    "ig_comment_id": "SAMPLE_C_006",
+    "commenter_username": "angry_troll",
+    "comment_text": "This is trash and you are an idiot for posting it",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_3",
+    "parent_media_id": "SAMPLE_POST_3",
+    "ig_comment_id": "SAMPLE_C_007",
+    "commenter_username": "curious_sam",
+    "comment_text": "How long did it actually take her to recover?",
+    "comment_permalink": null
+  },
+  {
+    "ig_post_id": "SAMPLE_POST_3",
+    "parent_media_id": "SAMPLE_POST_3",
+    "ig_comment_id": "SAMPLE_C_008",
+    "commenter_username": "debate_lord",
+    "comment_text": "This is just propaganda, that whole story is a myth that never happened",
+    "comment_permalink": null
+  }
+]

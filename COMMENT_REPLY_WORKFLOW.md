@@ -253,16 +253,63 @@ These show the *tone and safety bar*. Each row still starts at `needs_review`.
 
 ---
 
-## 10. Not wired up yet
+## 10. The scripts (draft-only)
 
-This is deliberate. As of now the system's **design** captures, classifies, drafts, and
-stages into Supabase — it does **not** publish replies to Instagram.
+Two Node scripts implement the flow. **Both refuse to touch live Instagram by default.**
+
+### `comment-intake.js` — capture + classify + draft (never posts)
+
+Reads comments, classifies each (`lib-comment-classify.js`), assigns risk, drafts a safe
+reply, and stages a row in `ig_comment_replies` as `needs_review`. It **only ever writes
+drafts** — it cannot post.
+
+```bash
+node comment-intake.js                # read sample-comments.json (offline, safe default)
+node comment-intake.js --file x.json  # read a specific fixture
+COMMENTS_LIVE=1 node comment-intake.js  # read LIVE IG comments (needs approved scope)
+```
+
+- Live reading is **off** unless `COMMENTS_LIVE=1`. By default it runs against
+  `sample-comments.json` so it's testable without hitting Instagram.
+- Re-running is safe: rows dedupe on `ig_comment_id`, so anything Tanya has already
+  reviewed/approved is left untouched.
+- The classifier is a plain, deterministic ruleset (no live LLM), so it never invents facts.
+  High-risk categories (`correction_challenge`, `sensitive_historical_dispute`,
+  `hostile_trolling`) get **no** auto-draft and are flagged for Tanya. Swapping in a real
+  LLM later is fine **as long as those same guardrails stay**.
+
+### `reply-worker.js` — post approved replies (dry run by default)
+
+Finds `status = 'approved'` rows and, **only when explicitly switched live**, posts
+`approved_reply` to Instagram. By default it's a **dry run**: it prints what it *would* post
+and changes nothing.
+
+```bash
+node reply-worker.js                          # DRY RUN — lists approved replies, posts nothing
+node reply-worker.js --id 5                   # DRY RUN for one row
+REPLIES_LIVE=1 node reply-worker.js --confirm  # ACTUALLY post (both flag AND --confirm required)
+```
+
+- Going live needs **both** `REPLIES_LIVE=1` **and** `--confirm` — no accidental posting.
+- Contract: only `approved` rows; posts `approved_reply` (never the raw draft); on success
+  `status → posted` + `posted_at`; on failure `status → failed` + `error_note`.
+
+npm shortcuts: `npm run intake`, `npm run reply-worker`.
+
+---
+
+## 11. Not wired up to live Instagram yet
+
+This is deliberate. The scripts **capture, classify, draft, and stage** into Supabase, and
+the worker will **dry-run** the posting — but nothing reaches Instagram until Tanya flips the
+live switches.
 
 - The repo can publish *posts* today (`ig.js` uses `credentials.env` → `ACCESS_TOKEN` and
   `IG_USER_ID`). Reading and replying to *comments* is a **different Instagram permission and
-  endpoint** and is intentionally left off.
+  endpoint** and is intentionally left off (`COMMENTS_LIVE` / `REPLIES_LIVE` both default
+  off).
 - Before any live reply posting is turned on, Tanya approves: (a) the added Instagram
-  permission scope, and (b) the posting worker itself.
+  permission scope, and (b) running `reply-worker.js` with `REPLIES_LIVE=1 --confirm`.
 - Until then, the approval gate is manual and that is correct — the AI's job ends at
   `needs_review`, and the `ig_comment_replies` table is where every draft waits for Tanya.
 
