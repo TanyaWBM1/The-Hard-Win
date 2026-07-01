@@ -340,6 +340,12 @@ Why manual: while the Meta app is unpublished / in Development mode, the API ret
 *counts* but not comment *text* from outside accounts — so a person reading the app is the
 reliable path. Visibility is retained (`posts:summary`); only the automated replying is paused.
 
+**Automated visibility check:** `posts:summary` also runs on a schedule — a Windows task,
+*"The Hard Win - Weekly Posts Summary"*, runs `run-posts-summary.bat` every **Friday at 9:45 AM
+ET** (S4U, runs logged out; "start when available"; logs to `posts-summary-log.txt`). It is a
+**read-only** weekly visibility check — no posting, no Supabase writes, no comment-text reading,
+no account changes.
+
 ### 11b. Automated workflow (built and documented — **PAUSED**, not deleted)
 
 The pieces below are complete and remain in the repo, ready to resume if Tanya restarts it:

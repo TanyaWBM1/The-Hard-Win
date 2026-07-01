@@ -55,6 +55,14 @@ activity (marked 💬) so you know which ones to open in the Instagram app and r
 It only reads your posts — it can't read comment text (that's the Development-mode limit), and
 it never posts or changes anything.
 
+**Runs automatically once a week:** a scheduled task — **"The Hard Win - Weekly Posts Summary"**
+— runs `run-posts-summary.bat` **every Friday at 9:45 AM ET** (runs whether you're logged in or
+not; catches up if the PC was off). It just writes the read-only summary to
+`posts-summary-log.txt` so you have a weekly snapshot of which posts have comments. It **never**
+posts, reads comment text, writes to Supabase, or changes the account. Run it any time yourself
+with `npm run posts:summary`. (To pause it:
+`Disable-ScheduledTask -TaskName "The Hard Win - Weekly Posts Summary"`.)
+
 The system can draft replies to comments on your posts, but **nothing posts until you approve
 it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
 
