@@ -1,5 +1,16 @@
 # Comment Reply Workflow — The Hard Win
 
+> ⏸️ **STATUS: PAUSED (2026-07-01).** This automated comment intake/reply system is **fully
+> built and documented, but paused.** The **active workflow is manual** — Tanya replies to
+> comments directly in the Instagram app for now. It was paused because Meta App Review / Live
+> Mode / Human Agent / messaging permissions are too much overhead at this stage.
+> - Nothing here is removed — the scripts, the `ig_comment_replies` table, and this document
+>   all remain, ready to resume if Tanya restarts it.
+> - The daily intake scheduled task is **disabled**.
+> - **Note:** the live account may show comments in the Instagram UI even when the API returns
+>   none — while the app is unpublished / in Development mode, the API does not return comments
+>   from non-role accounts (see §11 diagnostics). Manual replying sidesteps this entirely.
+
 How we handle comments on Hard Win Instagram posts. The AI may **draft** a suggested
 reply, but **nothing is published until Tanya approves it**. This is the same rule that
 governs the posts themselves: automate the labor, never the judgment.

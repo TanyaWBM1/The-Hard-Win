@@ -38,8 +38,19 @@ After **9:15 AM ET** (the poster runs every other day):
   layers (see `CONTENT_RULES.md`). Our cards are original renders, so we're safe.
 
 ## 5. Comment replies — the daily loop (draft-only, you approve every one)
-The system can now draft replies to comments on your posts, but **nothing posts until you
-approve it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
+
+> ⏸️ **PAUSED (decision 2026-07-01).** For now, **reply to comments manually in the Instagram
+> app.** The automated comment-reply system is **built and kept**, but paused — Meta App Review
+> / Live Mode / Human Agent / messaging permissions are too much overhead at this stage.
+> - The daily intake scheduled task has been **disabled** (re-enable with
+>   `Enable-ScheduledTask -TaskName "The Hard Win - Daily Comment Intake"`).
+> - **Do not continue Meta App Review** for automated replies **unless Tanya explicitly
+>   restarts it.**
+> - Nothing was deleted — the code, Supabase tables, and docs remain. The steps below are how
+>   to *resume* if Tanya restarts it later.
+
+The system can draft replies to comments on your posts, but **nothing posts until you approve
+it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
 
 **Status (2026-07-01):** ✅ **token is authorized for comments.** Re-authorized with the
 `instagram_business_manage_comments` scope; `node ig.js whoami` confirms **thehardwin /
