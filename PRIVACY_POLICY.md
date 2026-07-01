@@ -1,3 +1,8 @@
+---
+layout: default
+title: Privacy Policy
+---
+
 # Privacy Policy — The Hard Win
 
 *Effective date: 2026-07-01. This policy may be updated as the system changes; the effective

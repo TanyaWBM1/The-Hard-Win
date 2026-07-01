@@ -185,6 +185,28 @@ email or a clear placeholder** — never a personal email. This matters because 
 accounts' comments only come through the API once the app is out of Development mode, and
 getting to Live mode goes through app review, which checks these pages.
 
+**Hosting (GitHub Pages).** The pages are served from this repo via GitHub Pages (Jekyll).
+Add `_config.yml` + an `index.md`, put `---\nlayout: default\n---` front matter at the top of
+each policy page, then enable Pages (Settings → Pages → Source: `main` / root). The public URL
+pattern (extensionless — GitHub Pages resolves the `.html`) is:
+
+```
+https://<github-user>.github.io/<repo>/PRIVACY_POLICY
+https://<github-user>.github.io/<repo>/TERMS_OF_SERVICE
+https://<github-user>.github.io/<repo>/DATA_DELETION
+```
+
+For The Hard Win specifically:
+
+```
+https://tanyawbm1.github.io/The-Hard-Win/PRIVACY_POLICY
+https://tanyawbm1.github.io/The-Hard-Win/TERMS_OF_SERVICE
+https://tanyawbm1.github.io/The-Hard-Win/DATA_DELETION
+```
+
+Paste those into the Meta Developer App settings (Privacy Policy URL, Terms of Service URL,
+and Data Deletion URL / instructions).
+
 ---
 
 ## 9. Token exchange setup

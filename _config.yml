@@ -1,0 +1,18 @@
+# GitHub Pages config — serves The Hard Win public policy pages.
+# Only the compliance pages + index are meant to be browsed; everything else is repo tooling.
+title: The Hard Win — Policies
+description: Public policy pages for The Hard Win Instagram content system.
+theme: jekyll-theme-minimal
+
+# Keep the build small and avoid publishing repo internals as web pages.
+exclude:
+  - node_modules
+  - output
+  - "*.js"
+  - "*.bat"
+  - "*.sql"
+  - supabase
+  - caption_templates
+  - post_templates
+  - research
+  - skills

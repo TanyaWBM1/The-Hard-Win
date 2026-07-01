@@ -1,3 +1,8 @@
+---
+layout: default
+title: Data Deletion
+---
+
 # Data Deletion Request — The Hard Win
 
 *Effective date: 2026-07-01. This page may be updated as the system changes.*

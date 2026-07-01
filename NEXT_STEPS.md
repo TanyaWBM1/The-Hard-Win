@@ -102,10 +102,28 @@ REPLIES_LIVE=1 node reply-worker.js --confirm   # 5. actually post approved repl
 > You approved turning this on. It's still built so **you** click go — the AI only ever
 > drafts; it never replies to the public on its own.
 
-## 6. One loose end (optional)
-- **`gh` CLI** is installed but **not logged in**. To finish: open a **new PowerShell window** →
-  `gh auth login` → GitHub.com → HTTPS → web browser → authorize. Check with `gh auth status`.
-  *(Everything works without this; it just makes future GitHub steps smoother.)*
+## 6. Compliance pages on the web (GitHub Pages)
+The Privacy Policy, Terms, and Data Deletion pages are served publicly via **GitHub Pages** so
+you can paste real URLs into the Meta app settings. Expected public URLs:
+
+- `https://tanyawbm1.github.io/The-Hard-Win/PRIVACY_POLICY`
+- `https://tanyawbm1.github.io/The-Hard-Win/TERMS_OF_SERVICE`
+- `https://tanyawbm1.github.io/The-Hard-Win/DATA_DELETION`
+
+**If the pages don't load, enable Pages manually (one time):**
+1. Go to **https://github.com/TanyaWBM1/The-Hard-Win/settings/pages**
+2. Under **Build and deployment → Source**, pick **Deploy from a branch**.
+3. Set **Branch** = `main`, **Folder** = `/ (root)`, click **Save**.
+4. Wait 1–2 minutes, then refresh. The three URLs above should load.
+5. Still 404? Check **Actions** tab for a "pages build and deployment" run, and make sure the
+   `index.md` / `_config.yml` are on `main`.
+
+**Before submitting to Meta:** fill the real public brand email into the contact line of all
+three pages (they currently show a placeholder). Tell Claude Code the address and it'll add it.
+
+## 7. One loose end (optional)
+- **`gh` CLI** is now **logged in** as `TanyaWBM1` (verified). Nothing to do here — future
+  GitHub steps (like enabling Pages) can be done from the command line.
 
 ## Key references
 | What | Where |

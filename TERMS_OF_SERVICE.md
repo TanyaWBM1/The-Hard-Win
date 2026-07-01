@@ -1,3 +1,8 @@
+---
+layout: default
+title: Terms of Service
+---
+
 # Terms of Service — The Hard Win
 
 *Effective date: 2026-07-01. These terms may be updated as the system changes; the effective
