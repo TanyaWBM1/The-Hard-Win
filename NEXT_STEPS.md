@@ -2,6 +2,11 @@
 
 A quick, plain-language restart guide for The Hard Win. (Snapshot: 2026-06-30.)
 
+> **Building a new system from scratch (or repeating this one)?** See
+> [`SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md`](SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md) — the
+> master, success-built setup guide (account → rules → repo → Supabase → approval gates →
+> then automation). This NEXT_STEPS file is for running the *existing* Hard Win day to day.
+
 ---
 
 ## 1. First thing tomorrow — check the morning post
