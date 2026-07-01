@@ -321,16 +321,31 @@ npm shortcuts: `npm run intake`, `npm run reply-worker`.
 
 ---
 
-## 11. Live status (approved by Tanya, 2026-06-30)
+## 11. Live status (updated 2026-07-01)
 
-Tanya has approved (a) the Instagram comment permission scope and (b) running the reply
-worker live. Confirmed by test:
+Tanya has approved (a) turning comment intake/replies on and (b) running the reply worker
+live. The code and automation are done. **One prerequisite is still outstanding: the
+Instagram token's permission scope.**
 
-- **Comment reading — working.** The existing IG token (`credentials.env` → `ACCESS_TOKEN`)
-  already carries the comment scope; a live read against a posted card returned cleanly. So
-  `COMMENTS_LIVE=1 node comment-intake.js` pulls real comments today.
-- **Reply posting — armed, still manual.** The reply endpoint uses the same scope. It stays
-  behind the two switches on purpose: `REPLIES_LIVE=1 node reply-worker.js --confirm`.
+- **Comment reading — BLOCKED on a token scope.** The account is type `MEDIA_CREATOR` on the
+  *Instagram API with Instagram Login*. The current token (`credentials.env` → `ACCESS_TOKEN`)
+  can read media and `comments_count`, but the comments endpoint returns an **empty list with
+  no error** — the signature of a token that is **missing `instagram_business_manage_comments`**.
+  Verified 2026-07-01: a real second-account comment raised `comments_count` (1→2) but the API
+  still returned zero comment bodies. So `COMMENTS_LIVE=1 node comment-intake.js` currently
+  stages nothing, not because there are no comments, but because the token can't read them.
+  *(An earlier note here wrongly said reading was "working" — the clean empty response was
+  mistaken for success. Corrected.)*
+- **Reply posting — also needs that scope.** Posting a reply uses the same
+  `instagram_business_manage_comments` permission, so it will fail until the token is
+  re-authorized too.
+
+**Fix (Tanya, one time):** re-generate the Instagram access token with
+`instagram_business_manage_comments` added to the granted permissions (Meta App Dashboard →
+Instagram → *API setup with Instagram login* → add the Manage Comments permission → generate
+a new token), paste it into `credentials.env` as `ACCESS_TOKEN`, then run `node ig.js whoami`
+to confirm. After that, re-run `COMMENTS_LIVE=1 node comment-intake.js` and the second-account
+test comment should land as `needs_review`.
 
 What did **not** change: the human gate. Nothing reaches the public automatically. The AI
 only ever drafts; the worker only posts rows Tanya has personally moved to `approved`, and

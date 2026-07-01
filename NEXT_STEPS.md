@@ -36,8 +36,13 @@ After **9:15 AM ET** (the poster runs every other day):
 The system can now draft replies to comments on your posts, but **nothing posts until you
 approve it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
 
-**Status:** live comment *reading* is confirmed working on your IG token. Reply *posting* is
-armed but stays off until you run the worker with the two live switches (below).
+**Status (2026-07-01):** ⚠️ **blocked on a token permission.** Your IG token can read posts
+and comment *counts*, but not comment *text* — it's missing the `instagram_business_manage_comments`
+scope, so intake currently stages nothing even when comments exist. **Fix:** re-generate the
+Instagram token with the *Manage Comments* permission added (Meta App Dashboard → Instagram →
+API setup with Instagram login), paste it into `credentials.env` as `ACCESS_TOKEN`, run
+`node ig.js whoami`. Full details in `COMMENT_REPLY_WORKFLOW.md` §11. Everything below works
+once the token is updated.
 
 **Runs automatically:** a Windows scheduled task — **"The Hard Win - Daily Comment Intake"** —
 runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It runs **whether
