@@ -271,6 +271,9 @@ COMMENTS_LIVE=1 node comment-intake.js  # read LIVE IG comments (needs approved 
 
 - Live reading is **off** unless `COMMENTS_LIVE=1`. By default it runs against
   `sample-comments.json` so it's testable without hitting Instagram.
+- With `COMMENTS_LIVE=1` it scans **all recent posts on the account** (the account's own
+  media list from Instagram), not just the cards this system tracked — bounded by
+  `MEDIA_SCAN_LIMIT` (default 50).
 - Re-running is safe: rows dedupe on `ig_comment_id`, so anything Tanya has already
   reviewed/approved is left untouched.
 - The classifier is a plain, deterministic ruleset (no live LLM), so it never invents facts.

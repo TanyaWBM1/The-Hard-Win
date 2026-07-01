@@ -8,6 +8,9 @@
 //   node comment-intake.js --file x.json   -> read a specific fixture file
 //   COMMENTS_LIVE=1 node comment-intake.js  -> read LIVE comments from Instagram
 //        (requires an Instagram permission scope Tanya has approved; OFF by default)
+//        Scans ALL recent posts on the account (the account's own media list), not just
+//        the cards this system tracked. Bound the scan with MEDIA_SCAN_LIMIT (default 50):
+//        MEDIA_SCAN_LIMIT=100 COMMENTS_LIVE=1 node comment-intake.js
 //
 // Re-running is safe: rows are de-duplicated on ig_comment_id, so a comment already staged
 // (and possibly already approved/edited by Tanya) is left untouched.
@@ -54,14 +57,14 @@ async function readLive() {
   const ig = loadEnv("credentials.env");
   if (!ig.ACCESS_TOKEN || !ig.IG_USER_ID) throw new Error("credentials.env missing ACCESS_TOKEN / IG_USER_ID");
 
-  // Scan comments on our recently-posted cards (posts.ig_post_id where status='posted').
-  const postsUrl = `${SB}/rest/v1/posts?status=eq.posted&ig_post_id=not.is.null&select=ig_post_id&order=posted_at.desc&limit=25`;
-  const posts = await fetch(postsUrl, { headers: sbHeaders }).then((r) => r.json());
-  if (!Array.isArray(posts)) throw new Error("supabase read posts: " + JSON.stringify(posts));
+  // Scan ALL recent posts on the account — the account's own media list, not just the cards
+  // this system tracked in Supabase. Bounded to MEDIA_SCAN_LIMIT most-recent posts.
+  const media = await listRecentMedia(ig);
+  log(`Scanning ${media.length} recent post(s) on the account for comments...`);
 
   const out = [];
-  for (const p of posts) {
-    const mediaId = p.ig_post_id;
+  for (const m of media) {
+    const mediaId = m.id;
     const url = `${GRAPH}/${mediaId}/comments?fields=id,text,username,timestamp&access_token=${ig.ACCESS_TOKEN}`;
     const j = await fetch(url).then((r) => r.json());
     if (j.error) { log("⚠️ could not read comments for", mediaId, "-", j.error.message || ""); continue; }
@@ -72,11 +75,25 @@ async function readLive() {
         ig_comment_id: c.id,
         commenter_username: c.username || null,
         comment_text: c.text || "",
-        comment_permalink: null,
+        comment_permalink: m.permalink || null,
       });
     }
   }
   return out;
+}
+
+// Pull the account's recent media, following pages until we hit MEDIA_SCAN_LIMIT.
+const MEDIA_SCAN_LIMIT = Number(process.env.MEDIA_SCAN_LIMIT || 50);
+async function listRecentMedia(ig) {
+  const media = [];
+  let url = `${GRAPH}/${ig.IG_USER_ID}/media?fields=id,permalink,timestamp&limit=25&access_token=${ig.ACCESS_TOKEN}`;
+  while (url && media.length < MEDIA_SCAN_LIMIT) {
+    const j = await fetch(url).then((r) => r.json());
+    if (j.error) throw new Error("ig media list: " + JSON.stringify(j.error));
+    for (const m of j.data || []) media.push(m);
+    url = (j.paging && j.paging.next) || null;
+  }
+  return media.slice(0, MEDIA_SCAN_LIMIT);
 }
 
 // ---- stage a row (dedupe on ig_comment_id; never clobber Tanya's work) ----
