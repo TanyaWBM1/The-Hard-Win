@@ -281,6 +281,16 @@ COMMENTS_LIVE=1 node comment-intake.js  # read LIVE IG comments (needs approved 
   `hostile_trolling`) get **no** auto-draft and are flagged for Tanya. Swapping in a real
   LLM later is fine **as long as those same guardrails stay**.
 
+**Runs on a schedule.** A Windows scheduled task, *"The Hard Win - Daily Comment Intake"*,
+runs `run-intake.bat` daily at 9:30 AM ET — i.e. `COMMENTS_LIVE=1 node comment-intake.js`,
+logged to `comment-intake-log.txt`. This is draft-only automation: it stages `needs_review`
+rows and **never posts**. The boundary is unchanged — public replying is still a manual,
+two-switch step (see below).
+
+> Comment intake scans the most recent Instagram media directly from @thehardwin, not only
+> posts stored in Supabase. The default scan limit is **50** recent posts. Increase with
+> `MEDIA_SCAN_LIMIT=100` only when checking older posts or troubleshooting missed comments.
+
 ### `reply-worker.js` — post approved replies (dry run by default)
 
 Finds `status = 'approved'` rows and, **only when explicitly switched live**, posts

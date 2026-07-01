@@ -39,6 +39,18 @@ approve it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW
 **Status:** live comment *reading* is confirmed working on your IG token. Reply *posting* is
 armed but stays off until you run the worker with the two live switches (below).
 
+**Runs automatically:** a Windows scheduled task — **"The Hard Win - Daily Comment Intake"** —
+runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It pulls new
+comments and stages drafts as `needs_review` — it **never posts**. Output is appended to
+`comment-intake-log.txt`. So each morning you can just run `npm run replies:review` to see
+what's waiting; steps 1–2 below happen on their own. (To pause it:
+`Disable-ScheduledTask -TaskName "The Hard Win - Daily Comment Intake"`.)
+
+> **Note on the scan:** comment intake scans the most recent Instagram media directly from
+> @thehardwin, not only posts stored in Supabase. The default scan limit is **50** recent
+> posts. Increase with `MEDIA_SCAN_LIMIT=100` only when checking older posts or
+> troubleshooting missed comments.
+
 The loop, whenever you want to check comments:
 
 1. **Pull + draft.** In this folder run: `npm run intake`

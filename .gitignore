@@ -9,6 +9,7 @@ __pycache__/
 
 # Logs
 post-log.txt
+comment-intake-log.txt
 
 # Dependencies (regenerate with: npm install)
 node_modules/
