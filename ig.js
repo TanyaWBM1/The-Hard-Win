@@ -5,7 +5,8 @@
 //   node ig.js longlived        -> exchange for a ~60-day token, save it back
 //   node ig.js test             -> publish a test card (uses TEST_IMAGE_URL + TEST_CAPTION)
 //   node ig.js exchange <code>  -> turn an OAuth ?code=... into a saved long-lived token
-//                                  (default redirect https://localhost/ ; override as 2nd arg)
+//                                  (default redirect https://tanyawbm1.github.io/The-Hard-Win/ ;
+//                                   MUST match the redirect_uri in the authorize URL; override as 2nd arg)
 
 const fs = require("fs");
 const path = require("path");
@@ -90,7 +91,9 @@ async function test(env) {
 
 // Turn an OAuth authorization ?code=... into a saved long-lived token.
 // Adds the comment scope to the account if you authorized with it in the URL.
-const REDIRECT_URI_DEFAULT = "https://localhost/";
+// Must EXACTLY match the redirect_uri in the authorize URL AND the value saved under
+// Instagram -> API setup with Instagram login -> Business login settings -> Valid OAuth Redirect URIs.
+const REDIRECT_URI_DEFAULT = "https://tanyawbm1.github.io/The-Hard-Win/";
 async function exchange(env) {
   let code = process.argv[3];
   const redirect = process.argv[4] || REDIRECT_URI_DEFAULT;
