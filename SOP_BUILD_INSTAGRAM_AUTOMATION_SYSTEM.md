@@ -244,6 +244,37 @@ justification is:
 - **manage_messages** — reserved for future controlled inbox/message management, **not** active
   auto-DM behavior
 
+### 8c. Current Meta app review permission bundle
+
+When you submit for app review, Meta shows the bundle it will review. For The Hard Win this
+currently includes **Human Agent** *plus* the five Instagram Business permissions — because the
+messaging permission (`instagram_business_manage_messages`) is part of the requested set, Meta
+automatically pulls in **Human Agent**.
+
+| Reviewed item | Plain-language meaning | Status |
+|---|---|---|
+| **Human Agent** | Allows a real human agent to respond to user messages with the `human_agent` tag within Meta's allowed window (within 7 days of a user's message). **Not** currently used for automatic DM replies. Any future use must be manually approved, documented, and tested. | Reserved (future) |
+| `instagram_business_basic` | Lets the app read the professional Instagram account profile and media. | In use |
+| `instagram_business_content_publish` | Lets the app publish original feed/photo/video content on behalf of the account. | In use |
+| `instagram_business_manage_comments` | Lets the app read and manage comments — public comment intake and human-approved public replies. | In use |
+| `instagram_business_manage_insights` | Reserved for analytics and performance review, including future post/account insights. | Reserved |
+| `instagram_business_manage_messages` | Reserved for future controlled messaging/inbox workflows. Not currently used for automatic DM replies. | Reserved |
+
+**Hard safety boundary.** The current live system may: publish scheduled posts and first
+comments, read public comments, draft suggested public replies, and post approved public
+replies **only through the approved reply worker**. It must **not** send DMs, private replies,
+or Human Agent–tagged messages unless a separate DM/private-message workflow is designed,
+documented, reviewed, dry-run tested, and **explicitly approved by Tanya.**
+
+**Meta review note.** If Meta asks why Human Agent / `manage_messages` is included: it is
+**reserved for future human-reviewed inbox support only — not active automated messaging.** If
+Meta review becomes harder because of this extra scope, the **fallback plan** is to **remove
+Human Agent and `instagram_business_manage_messages`** and proceed with the narrower public
+content/comment workflow. The current working product is public posting + public comment
+handling, so the narrowest defensible review path is the three/four Instagram permissions
+(`instagram_business_basic`, `instagram_business_content_publish`,
+`instagram_business_manage_comments`, and optionally `instagram_business_manage_insights`).
+
 ---
 
 ## 9. Token exchange setup
@@ -385,6 +416,7 @@ The Hard Win build as of 2026-07-01.)*
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
 | 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
+| 2026-07-01 | Documented Meta app-review bundle incl. Human Agent (§8c) | Meta's review bundle shows **Human Agent** + the 5 Instagram permissions (Human Agent is pulled in because `manage_messages` is requested). Documented Human Agent as reserved future messaging support only; added hard safety boundary (no DMs / private / Human Agent messages) and a fallback plan to drop Human Agent + `manage_messages` if review pushes back. | No messaging feature is active. |
 | 2026-07-01 | Documented intentional five-permission Instagram set (§8b) | Decision recorded to keep all 5 Business permissions: basic + content_publish + manage_comments in use; manage_insights + manage_messages reserved for future approved workflows. Boundary + messaging safety rule + Meta-review justification documented. | Keeping a permission ≠ using it; new uses require doc + approval + dry-run + SOP entry first. Comment system stays public-comment only (no DMs). |
 | 2026-07-01 | Added public compliance pages for Meta app review | Created `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`, `DATA_DELETION.md`; linked from README; §8a added. Plain language; no secrets; contact left as a placeholder to fill with a public brand email | Needed before publishing / app review (and thus before public comments come through the API). |
 | 2026-07-01 | Comment visibility diagnostic (read-only) | Real outside comment from `ronnieee119` on the Toni Morrison post (media `18127259155715944`, `comments_count = 1`) is visible in the Instagram UI but the comments endpoint returns `[]` with no error. Across all 4 posts: 10 counted comments, 0 returned by the API. Scope is present, so this is **API visibility = Meta App in Development mode** (only role-users' comments are returned). | No posting, no Supabase writes, no workflow change. Next: add commenter as an Instagram Tester or move app to Live, then re-run intake. See §13. |

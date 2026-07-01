@@ -50,10 +50,11 @@ friend/second account comments, run `COMMENTS_LIVE=1 node comment-intake.js` →
 replies:review` and it should appear as `needs_review`.
 
 **Permissions:** the app intentionally keeps all **5** Instagram Business permissions (basic,
-content_publish, manage_comments, manage_insights, manage_messages). Only *comments* are used
-today; *insights* and *messages* are reserved for future approved workflows. The comment system
-is public-comment only and **never sends DMs**. Details: `COMMENT_REPLY_WORKFLOW.md` §12 and
-`SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md` §8b.
+content_publish, manage_comments, manage_insights, manage_messages). Meta's app-review bundle
+also shows **Human Agent** (because messaging is in the set). Only *comments* are used today;
+*insights*, *messages*, and *Human Agent* are reserved for future approved workflows. The
+comment system is public-comment only and **never sends DMs or Human Agent messages**. Details:
+`COMMENT_REPLY_WORKFLOW.md` §12 and `SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md` §8b–§8c.
 
 **Runs automatically:** a Windows scheduled task — **"The Hard Win - Daily Comment Intake"** —
 runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It runs **whether

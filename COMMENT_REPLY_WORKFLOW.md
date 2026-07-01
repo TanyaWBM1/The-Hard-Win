@@ -372,3 +372,12 @@ strictly **public-comment focused**:
 - **Keeping a permission is not permission to use it.** Any new use of a permission (insights,
   messaging, anything else) must be documented, approved, dry-run tested, and added to the SOP
   **before** it goes live.
+
+**Human Agent (Meta app review bundle).** Because `instagram_business_manage_messages` is in the
+requested set, Meta's app-review bundle also includes **Human Agent** — a messaging feature that
+lets a real person reply to a user's message with the `human_agent` tag within Meta's allowed
+window (7 days of the user's message). The Hard Win **does not use Human Agent or any messaging
+feature today.** It is reserved for a possible future, human-reviewed inbox workflow that would
+have to be designed, documented, reviewed, dry-run tested, and explicitly approved by Tanya
+first. Full bundle details + the review fallback plan: `SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md`
+§8c.
