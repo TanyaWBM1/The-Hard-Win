@@ -4,6 +4,12 @@
 > built and documented, but paused.** The **active workflow is manual** — Tanya replies to
 > comments directly in the Instagram app for now. It was paused because Meta App Review / Live
 > Mode / Human Agent / messaging permissions are too much overhead at this stage.
+>
+> **Active manual workflow:** run **`npm run posts:summary`** to see which posts have comments
+> (flagged 💬), then open Instagram and reply by hand. That tool is **read-only** — it does
+> **not** read comment text, **not** post replies, **not** update Supabase, and **not** change
+> account data.
+>
 > - Nothing here is removed — the scripts, the `ig_comment_replies` table, and this document
 >   all remain, ready to resume if Tanya restarts it.
 > - The daily intake scheduled task is **disabled**.

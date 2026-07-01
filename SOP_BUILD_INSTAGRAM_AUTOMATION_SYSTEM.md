@@ -321,9 +321,33 @@ Only after §2–§9 are solid.
 
 ## 11. Comment intake and reply workflow
 
+### 11a. Active workflow right now — manual comment engagement
+
+> **Manual comment engagement is the active workflow while automated replies are paused.**
+> Use `npm run posts:summary` to identify posts with comments, then open Instagram and reply
+> manually. The summary tool is **read-only**: it does **not** read comment text, does **not**
+> post replies, does **not** update Supabase, and does **not** change account data.
+
+The daily loop while paused:
+
+1. Run **`npm run posts:summary`** — a read-only list of recent posts with date, **comments
+   count**, **likes count**, permalink, and a caption preview. Posts that have comments are
+   flagged with **💬**.
+2. **Identify the posts with comments** from that list.
+3. **Open Instagram** (app or web), read the comments on those posts, and **reply by hand**.
+
+Why manual: while the Meta app is unpublished / in Development mode, the API returns comment
+*counts* but not comment *text* from outside accounts — so a person reading the app is the
+reliable path. Visibility is retained (`posts:summary`); only the automated replying is paused.
+
+### 11b. Automated workflow (built and documented — **PAUSED**, not deleted)
+
+The pieces below are complete and remain in the repo, ready to resume if Tanya restarts it:
+
 - [ ] **`comment-intake.js` reads and drafts only** — it classifies each comment, assigns risk,
       writes an AI draft, and stages a `needs_review` row. It **never posts**.
-- [ ] **A daily Windows task runs intake** (draft-only, logged).
+- [ ] **A daily Windows task runs intake** (draft-only, logged). *(Currently **disabled** while
+      paused — re-enable with `Enable-ScheduledTask -TaskName "The Hard Win - Daily Comment Intake"`.)*
 - [ ] **Intake scans the account's media directly from Instagram** (the account's own recent
       posts), not just posts tracked in the database — bounded by a scan limit.
 - [ ] **Own-account comments may count in Instagram but are not staged** as external comments
@@ -416,6 +440,7 @@ The Hard Win build as of 2026-07-01.)*
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
 | 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
+| 2026-07-01 | Added read-only `posts:summary` tool; manual engagement is the active workflow | `npm run posts:summary` lists recent posts with date, comments count, likes count, permalink, and caption preview, and flags posts with comments using 💬. It is **read-only**: does not read comment text, does not post replies, does not update Supabase, does not change account data. Documented as the active manual workflow (§11a) while automation stays paused (§11b). | Visibility retained even though automated replying is paused. |
 | 2026-07-01 | **Paused** automated Instagram comment replies (decision) | Decision: Tanya replies to comments **manually** in Instagram for now; the automated system is **kept but paused** (Meta App Review / Live Mode / Human Agent / messaging overhead too high at this stage). Daily intake scheduled task **disabled**. Meta App Review is **not** to be continued unless Tanya restarts it. **The manual reply workflow is acceptable at this stage.** | Nothing deleted — scripts, the `ig_comment_replies` schema, and the diagnostic notes (§13 Development-mode visibility) are retained for a future resume. Do not request or use Human Agent / messaging workflows unless Tanya explicitly approves a future DM/private-message system. |
 | 2026-07-01 | Documented Meta app-review bundle incl. Human Agent (§8c) | Meta's review bundle shows **Human Agent** + the 5 Instagram permissions (Human Agent is pulled in because `manage_messages` is requested). Documented Human Agent as reserved future messaging support only; added hard safety boundary (no DMs / private / Human Agent messages) and a fallback plan to drop Human Agent + `manage_messages` if review pushes back. | No messaging feature is active. |
 | 2026-07-01 | Documented intentional five-permission Instagram set (§8b) | Decision recorded to keep all 5 Business permissions: basic + content_publish + manage_comments in use; manage_insights + manage_messages reserved for future approved workflows. Boundary + messaging safety rule + Meta-review justification documented. | Keeping a permission ≠ using it; new uses require doc + approval + dry-run + SOP entry first. Comment system stays public-comment only (no DMs). |
