@@ -32,7 +32,39 @@ After **9:15 AM ET** (the poster runs every other day):
 - **Originality:** public-domain images are *raw material* only — every post needs ≥3 original
   layers (see `CONTENT_RULES.md`). Our cards are original renders, so we're safe.
 
-## 5. One loose end (optional)
+## 5. Comment replies — the daily loop (draft-only, you approve every one)
+The system can now draft replies to comments on your posts, but **nothing posts until you
+approve it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW.md`.
+
+**Status:** live comment *reading* is confirmed working on your IG token. Reply *posting* is
+armed but stays off until you run the worker with the two live switches (below).
+
+The loop, whenever you want to check comments:
+
+1. **Pull + draft.** In this folder run: `npm run intake`
+   *(That reads the sample file. To pull your **real** comments instead:*
+   `COMMENTS_LIVE=1 node comment-intake.js`*.)* It saves each comment to Supabase with a
+   suggested reply and a status — it **never posts**.
+2. **Review in Supabase.** Open **Supabase → Table Editor → `ig_comment_replies`**. Look at
+   rows where `status = needs_review`. For each one you want to reply to:
+   - Happy with the draft? Copy it into `approved_reply`, set `status = approved`, put your
+     name in `approved_by`.
+   - Want to change it? Put your wording in `approved_reply` and set `status = approved`
+     (or `edited`).
+   - Don't reply? Leave it, or set `rejected` / `do_not_engage`.
+   *(Spam, trolls, and disputed/history fights are auto-flagged and get **no** draft — leave
+   those alone or mark `do_not_engage`.)*
+3. **See what would post (safe).** Run: `npm run reply-worker` — this is a **dry run**. It
+   lists your approved replies and posts nothing.
+4. **Actually post (when you're ready).** Run:
+   `REPLIES_LIVE=1 node reply-worker.js --confirm`
+   It posts **only** the `approved` rows, then marks them `posted`. If one fails it marks it
+   `failed` and writes the reason in `error_note`.
+
+> You approved turning this on. It's still built so **you** click go — the AI only ever
+> drafts; it never replies to the public on its own.
+
+## 6. One loose end (optional)
 - **`gh` CLI** is installed but **not logged in**. To finish: open a **new PowerShell window** →
   `gh auth login` → GitHub.com → HTTPS → web browser → authorize. Check with `gh auth status`.
   *(Everything works without this; it just makes future GitHub steps smoother.)*
@@ -44,6 +76,7 @@ After **9:15 AM ET** (the poster runs every other day):
 | The rules / skill | `skills/the-hard-win/SKILL.md` |
 | Instagram platform rules (living) | `skills/the-hard-win/INSTAGRAM_PLAYBOOK.md` |
 | Content + hashtag standards | `CONTENT_RULES.md` · `HASHTAG_RULES.md` |
+| Comment reply workflow + scripts | `COMMENT_REPLY_WORKFLOW.md` |
 | Supabase project (The Hard Win) | `tpirzpvvhhgpnwsrbbnh` |
 | GitHub repo | https://github.com/TanyaWBM1/The-Hard-Win |
 

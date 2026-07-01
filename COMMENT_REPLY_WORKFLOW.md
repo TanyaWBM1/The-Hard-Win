@@ -298,19 +298,19 @@ npm shortcuts: `npm run intake`, `npm run reply-worker`.
 
 ---
 
-## 11. Not wired up to live Instagram yet
+## 11. Live status (approved by Tanya, 2026-06-30)
 
-This is deliberate. The scripts **capture, classify, draft, and stage** into Supabase, and
-the worker will **dry-run** the posting — but nothing reaches Instagram until Tanya flips the
-live switches.
+Tanya has approved (a) the Instagram comment permission scope and (b) running the reply
+worker live. Confirmed by test:
 
-- The repo can publish *posts* today (`ig.js` uses `credentials.env` → `ACCESS_TOKEN` and
-  `IG_USER_ID`). Reading and replying to *comments* is a **different Instagram permission and
-  endpoint** and is intentionally left off (`COMMENTS_LIVE` / `REPLIES_LIVE` both default
-  off).
-- Before any live reply posting is turned on, Tanya approves: (a) the added Instagram
-  permission scope, and (b) running `reply-worker.js` with `REPLIES_LIVE=1 --confirm`.
-- Until then, the approval gate is manual and that is correct — the AI's job ends at
-  `needs_review`, and the `ig_comment_replies` table is where every draft waits for Tanya.
+- **Comment reading — working.** The existing IG token (`credentials.env` → `ACCESS_TOKEN`)
+  already carries the comment scope; a live read against a posted card returned cleanly. So
+  `COMMENTS_LIVE=1 node comment-intake.js` pulls real comments today.
+- **Reply posting — armed, still manual.** The reply endpoint uses the same scope. It stays
+  behind the two switches on purpose: `REPLIES_LIVE=1 node reply-worker.js --confirm`.
+
+What did **not** change: the human gate. Nothing reaches the public automatically. The AI
+only ever drafts; the worker only posts rows Tanya has personally moved to `approved`, and
+only when she runs it with both live switches. There is no always-on auto-reply.
 
 > Automate the labor, never the judgment. **Every public reply is Tanya's call.**
