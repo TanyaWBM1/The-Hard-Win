@@ -7,13 +7,19 @@ governs the posts themselves: automate the labor, never the judgment.
 > **The one rule that outranks everything here:**
 > **AI may draft public replies, but Tanya must approve every reply before posting.**
 
+**Where reviews live:** Supabase — the `public.ig_comment_replies` table
+(project **The Hard Win**, `tpirzpvvhhgpnwsrbbnh`). Not Google Sheets, not Airtable. This is
+the same database that already holds the `posts` queue, so approvals live in one place.
+
 > Documentation + structure only. This file does **not** turn on live comment posting.
 > The repo can already publish posts (`ig.js`, `credentials.env` → `ACCESS_TOKEN` /
-> `IG_USER_ID`), but replying to comments is a **separate permission and endpoint** and is
-> intentionally left disconnected until Tanya approves wiring it up. See
+> `IG_USER_ID`), but reading and replying to comments is a **separate permission and
+> endpoint** and is intentionally left disconnected until Tanya approves wiring it up. See
 > [Not wired up yet](#not-wired-up-yet).
 
 See also: [`CONTENT_RULES.md`](CONTENT_RULES.md) ·
+[`setup-table.sql`](setup-table.sql) ·
+[`supabase/migrations/20260630140000_ig_comment_replies.sql`](supabase/migrations/20260630140000_ig_comment_replies.sql) ·
 [`skills/the-hard-win/INSTAGRAM_PLAYBOOK.md`](skills/the-hard-win/INSTAGRAM_PLAYBOOK.md).
 
 ---
@@ -24,53 +30,76 @@ Every comment travels the same path. It can stop at any step; it only reaches th
 if it passes the approval gate.
 
 ```
-1. Capture comment      → save it (text, author, post, timestamp) as a new row
-2. Classify comment     → assign a category (praise, question, hostile, etc.)
-3. Assign risk level    → low / medium / high
-4. Draft reply          → AI writes a suggested reply (or marks do_not_engage)
-5. Wait for approval    → status sits at needs_review; Tanya reads it
+1. Capture comment      → save it as a new row in ig_comment_replies (status=needs_review)
+2. Classify comment     → set comment_type (praise_support, question, hostile_trolling, ...)
+3. Assign risk level    → risk_level = low / medium / high
+4. Draft reply          → AI writes ai_reply_draft (or marks do_not_engage, drafts nothing)
+5. Wait for approval     → row sits at needs_review; Tanya reads it
         ┌─────────────────────────────┴─────────────────────────────┐
-     approved / edited                                        rejected / do_not_engage
-        │                                                            │
-6. Publish (only now)   → post the reply, record it, set status=posted    (never published)
+   approved / edited                                          rejected / do_not_engage
+   (approved_reply set)                                       (never published)
+        │
+6. Posting worker        → status=posting → publish → status=posted (or failed + error_note)
 ```
 
 Plain-language version:
 
-1. **Capture the comment.** When someone comments, log it — who said it, on which post,
-   what they said, and when. Nothing else happens automatically.
-2. **Classify the comment type.** Sort it into one of the categories in §2 so we know how
-   to treat it.
-3. **Assign a risk level.** `low` (safe to reply warmly), `medium` (needs care or a fact
-   check), `high` (sensitive, disputed, or hostile — Tanya decides, AI does not draft a
-   public reply without her).
-4. **Draft a reply.** The AI writes a short, grounded suggestion in The Hard Win voice —
-   *or* marks it `do_not_engage` (spam, trolling) and drafts nothing.
-5. **Wait for approval.** The draft sits at `needs_review`. Tanya reads it and chooses:
-   approve as-is, edit it, reject it, or leave it alone.
-6. **Publish only after approval.** A reply is posted **only** once Tanya has set it to
-   `approved` or `edited`. Then it's posted and marked `posted`.
+1. **Capture the comment.** When someone comments, save a row — who said it, on which post,
+   the exact text, the permalink, and when. It starts at `needs_review`. Nothing else
+   happens automatically.
+2. **Classify the comment type.** Set `comment_type` to one of the categories in §2 so we
+   know how to treat it.
+3. **Assign a risk level.** Set `risk_level` — `low`, `medium`, or `high` — per the rules in
+   §3.
+4. **Draft a reply.** The AI writes a short, grounded `ai_reply_draft` in The Hard Win voice
+   — *or* marks it `do_not_engage` (spam, trolling) and drafts nothing.
+5. **Wait for approval.** The draft sits at `needs_review`. Tanya reads it and either
+   approves as-is (`approved`), edits it (`edited`), rejects it (`rejected`), or leaves it
+   alone (`do_not_engage` / `needs_research`). Her approval copies the exact text she signs
+   off on into `approved_reply`.
+6. **Publish only after approval.** The posting worker picks up **only** `approved` rows,
+   flips them to `posting`, posts, then sets `posted` — or `failed` with an `error_note`.
 
 ---
 
-## 2. Comment categories
+## 2. Comment categories (`comment_type`)
 
-Every captured comment gets exactly one category. The category sets the default handling.
+Every captured comment gets exactly one `comment_type`. The category sets the default
+handling and the starting risk level.
 
-| Category | What it is | Default handling |
+| `comment_type` | What it is | Default handling |
 |---|---|---|
-| **praise/support** | Kind, encouraging, "love this" | Warm, brief thank-you. Low risk. |
-| **question** | A genuine question about the person, fact, or idea | Answer only if we're sure; otherwise `needs_research`. |
-| **source request** | "Where's this from?" / "Source?" | Point to the receipt/source we already verified. `needs_research` if unclear. |
-| **correction/challenge** | Claims we got a fact wrong | **Never** reply until sources are re-checked. Route to `needs_research`, then Tanya. |
-| **sensitive historical dispute** | Contested history, politics, identity, or legacy disputes | **High risk.** Escalate to Tanya. AI does not draft a public reply alone. |
-| **hostile/trolling** | Insults, bait, bad-faith provocation | Do not argue. Default `do_not_engage`. |
-| **spam/promo** | Bots, "check my page," links, giveaways | `do_not_engage`. Never reply. |
-| **personal story** | Someone shares their own struggle/win | Warm, human acknowledgment. Never advice-dump. Low/medium risk. |
+| `praise_support` | Kind, encouraging, "love this" | Warm, brief thank-you. Low risk. |
+| `question` | A genuine question about the person, fact, or idea | Answer only if we're sure; otherwise `needs_research`. |
+| `source_request` | "Where's this from?" / "Source?" | Point to the receipt we already verified; `needs_research` if unclear. |
+| `correction_challenge` | Claims we got a fact wrong | **Never** reply until sources are re-checked. `needs_research`, then Tanya. |
+| `sensitive_historical_dispute` | Contested history, politics, identity, or legacy disputes | **High risk.** Escalate to Tanya. AI does not draft a public reply alone. |
+| `hostile_trolling` | Insults, bait, bad-faith provocation | Do not argue. Default `do_not_engage`. |
+| `spam_promo` | Bots, "check my page," links, giveaways | `do_not_engage`. Never reply. |
+| `personal_story` | Someone shares their own struggle/win | Warm, human acknowledgment. Never advice-dump. Medium risk. |
 
 ---
 
-## 3. Status values
+## 3. Risk levels (`risk_level`)
+
+Risk decides how much human care a comment needs before anything is said back.
+
+- **low** — `praise_support` and simple acknowledgments. Safe to reply warmly; still needs
+  approval, but it's a quick yes/no for Tanya.
+- **medium** — `question`, `source_request`, and `personal_story`. Fine to reply, but the
+  content must be accurate (questions/sources may route to `needs_research` first).
+- **high** — `correction_challenge`, disputes, identity/political conflict, accusations, and
+  hostile comments (`sensitive_historical_dispute`, `hostile_trolling`). The AI does **not**
+  draft a public reply on its own; these are escalated to Tanya, who decides whether we
+  respond at all.
+
+`source_check_required` is set to `true` whenever a reply would state or defend a fact —
+always for `correction_challenge`, and for any `question`/`source_request` we can't answer
+straight from an already-verified receipt.
+
+---
+
+## 4. Status values (`status`)
 
 The `status` field is the single source of truth for where a comment is in the flow.
 
@@ -78,142 +107,163 @@ The `status` field is the single source of truth for where a comment is in the f
 |---|---|
 | `needs_review` | AI has drafted a reply (or a recommendation); waiting for Tanya. |
 | `needs_research` | We can't reply responsibly until a fact/source is checked. |
-| `approved` | Tanya approved the AI draft **as written**. Cleared to post. |
-| `edited` | Tanya changed the draft and approved her version. Cleared to post. |
+| `approved` | Tanya approved the draft **as written**. `approved_reply` is set. Cleared to post. |
+| `edited` | Tanya rewrote the draft; her version is what will post. |
 | `rejected` | Tanya declined this reply. Nothing gets posted. |
 | `do_not_engage` | We will not reply at all (spam, trolling, bait). |
-| `posted` | The reply has been published to Instagram. |
+| `posting` | The worker has picked the row up and is publishing it. |
+| `posted` | The reply is live on Instagram (`posted_at` set, `ig_comment_id` of our reply recorded). |
+| `failed` | A post attempt failed; see `error_note`. Safe to retry after a look. |
 
-Only `approved` and `edited` are allowed to move to `posted`. Everything else is a dead end
-by design.
+Only `approved` (and Tanya's `edited` rows, once moved to `approved`) may reach `posting`.
+Everything else is a dead end by design. This is enforced in the database: a row **cannot**
+be saved as `approved` unless `approved_reply` actually contains text.
 
 ---
 
-## 4. AI reply rules
+## 5. Approval rule (the gate)
 
-These are hard rules. The AI follows all of them, every time.
+> **AI may draft replies, but no reply may post unless `status = 'approved'` and
+> `approved_reply` is present.**
 
-- **Never invent facts.** If we don't already have it verified, we don't say it.
+This is not just a convention — it's a database check constraint
+(`ig_comment_replies_approval_chk`) on the live table, so an approved-but-empty row is
+rejected by Postgres itself.
+
+---
+
+## 6. Posting-worker rule
+
+The reply worker (when it is eventually wired up — see §10) follows one narrow contract:
+
+- It may **only** process rows where `status = 'approved'`.
+- It ignores every other status. `needs_review`, `edited` (until moved to `approved`),
+  `rejected`, `do_not_engage`, `needs_research`, `posting`, `posted`, `failed` are all
+  hands-off.
+- It posts the text in `approved_reply` — never `ai_reply_draft`, never anything it composes
+  itself.
+- On success: set `status = 'posted'`, stamp `posted_at`.
+- On failure: set `status = 'failed'` and write the reason into `error_note` (never fail
+  silently — this mirrors the token-refresh log pattern already in the repo).
+
+---
+
+## 7. AI reply + safety rules
+
+Hard rules. The AI follows all of them, every time.
+
+- **Never invent historical facts.** If we don't already have it verified (two independent,
+  reputable sources — see `CONTENT_RULES.md`), we don't say it.
 - **Never argue with commenters.** No debating, no defending, no last word.
 - **Never publish corrections without source review.** A "you're wrong" comment goes to
   `needs_research` first — we re-check our two sources before anyone replies.
-- **Never respond to spam.** Spam and promo get `do_not_engage`, full stop.
+- **Never respond to spam.** `spam_promo` gets `do_not_engage`, full stop.
+- **Escalate sensitive comments to Tanya.** Anything contested, historical, political,
+  identity-related, an accusation, or hostile is hers to decide. The AI does not draft a
+  public reply to these on its own.
 - **Keep replies warm, brief, grounded, and in The Hard Win voice** — calm, plain,
   respectful, quietly powerful. No hype, no arguing, no emoji pile-ups.
-- **Escalate sensitive or disputed comments to Tanya.** Anything contested, historical,
-  political, or identity-related is hers to decide. The AI does not draft a public reply to
-  these on its own.
 
 And above all — the AI **drafts**, Tanya **approves**. No reply reaches the public without
 her sign-off.
 
 ---
 
-## 5. Suggested table schema
+## 8. The Supabase table (`ig_comment_replies`)
 
-Store comments wherever the rest of the system already lives. Two options — pick one.
+**Status: created and live** in project `tpirzpvvhhgpnwsrbbnh` (The Hard Win). The migration
+is checked in at
+[`supabase/migrations/20260630140000_ig_comment_replies.sql`](supabase/migrations/20260630140000_ig_comment_replies.sql).
+RLS is enabled, so only the secret server key can read or write it.
 
-### Option A — Supabase (matches the existing `posts` table)
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | bigint (identity) | Primary key. |
+| `created_at` | timestamptz | When we captured the comment. |
+| `updated_at` | timestamptz | Auto-touched on every update (trigger). |
+| `ig_post_id` | text | Our post the comment is on (→ `posts.ig_post_id`). |
+| `ig_comment_id` | text (unique) | The comment's own id — we dedupe on this. |
+| `parent_media_id` | text | The media the comment belongs to (Graph parent). |
+| `commenter_username` | text | Who commented. |
+| `comment_text` | text | Exactly what they said. |
+| `comment_permalink` | text | Link back to the comment. |
+| `comment_type` | text | One of the §2 categories. |
+| `risk_level` | text | `low` / `medium` / `high` (§3). |
+| `ai_reply_draft` | text | The AI's suggestion (may be null / do_not_engage). |
+| `approved_reply` | text | The exact text cleared to post (Tanya's). |
+| `status` | text | One of the §4 statuses. |
+| `approved_by` | text | `Tanya`, once she signs off. |
+| `approved_at` | timestamptz | When she approved. |
+| `posted_at` | timestamptz | When the reply actually posted. |
+| `error_note` | text | Failure detail if a post attempt fails. |
+| `source_check_required` | boolean | True when the reply states/defends a fact (§3). |
+| `notes` | text | Research notes, why rejected, context. |
 
-```sql
--- The Hard Win — incoming comments + AI reply drafts.
--- Paste into Supabase: SQL Editor -> New query -> Run.
+Guardrails baked into the table:
 
-create table if not exists comments (
-  id              bigint generated always as identity primary key,
-  ig_comment_id   text unique,          -- Instagram's comment id (dedupe on this)
-  ig_post_id      text,                 -- which post it's on (-> posts.ig_post_id)
-  author_username text,                 -- who commented
-  comment_text    text not null,        -- what they said
-  category        text,                 -- praise/support | question | source request |
-                                        -- correction/challenge | sensitive historical dispute |
-                                        -- hostile/trolling | spam/promo | personal story
-  risk_level      text default 'low',   -- low | medium | high
-  ai_draft_reply  text,                 -- the AI's suggested reply (may be null)
-  final_reply     text,                 -- what actually gets posted (Tanya's version)
-  status          text not null default 'needs_review',
-                                        -- needs_review | needs_research | approved |
-                                        -- edited | rejected | do_not_engage | posted
-  approved_by     text,                 -- 'Tanya' once she signs off
-  received_at     timestamptz not null default now(),
-  posted_at       timestamptz,          -- set only when it actually posts
-  notes           text                  -- research notes, why rejected, etc.
-);
-
--- Lock it down: only the secret server key can touch it.
-alter table comments enable row level security;
-```
-
-### Option B — Google Sheet (one row per comment)
-
-| Column | Example |
-|---|---|
-| `ig_comment_id` | `17985...` |
-| `ig_post_id` | `18004...` (Wilma Rudolph card) |
-| `author_username` | `@runner_maya` |
-| `comment_text` | "Where did you find this about her braces?" |
-| `category` | source request |
-| `risk_level` | low |
-| `ai_draft_reply` | (AI suggestion) |
-| `final_reply` | (Tanya's approved version) |
-| `status` | needs_review |
-| `approved_by` | (blank until Tanya signs off) |
-| `received_at` | 2026-06-30 09:40 |
-| `posted_at` | (blank until posted) |
-| `notes` | |
+- `status` is checked against the exact §4 list; `comment_type` against the §2 list;
+  `risk_level` against `low/medium/high`.
+- `ig_comment_replies_approval_chk`: you cannot save a row as `approved` unless
+  `approved_reply` has real text — the approval gate, enforced by the database.
+- `updated_at` is kept honest by a trigger.
+- Row-level security is on.
 
 ---
 
-## 6. Example comments with safe AI drafts
+## 9. Example comments with safe AI drafts
 
-These show the *tone and safety bar*. Each draft still goes to `needs_review` first.
+These show the *tone and safety bar*. Each row still starts at `needs_review`.
 
-### Example 1 — praise/support (low risk)
+### Example 1 — praise_support (low risk)
 
 > **Comment:** "This one hit me today. Needed it. 🙏"
 >
-> **Category:** praise/support **· Risk:** low **· Status:** `needs_review`
+> `comment_type` = `praise_support` · `risk_level` = `low` · `status` = `needs_review` ·
+> `source_check_required` = `false`
 >
-> **AI draft reply:** "Really glad it landed today. Keep showing up — that's the whole
+> **`ai_reply_draft`:** "Really glad it landed today. Keep showing up — that's the whole
 > thing."
 
-### Example 2 — source request (low risk, but verify before sending)
+### Example 2 — source_request (medium risk, verify before sending)
 
 > **Comment:** "Is the part about her childhood illness actually true? Source?"
 >
-> **Category:** source request **· Risk:** low **· Status:** `needs_review`
+> `comment_type` = `source_request` · `risk_level` = `medium` · `status` = `needs_review` ·
+> `source_check_required` = `true`
 >
-> **AI draft reply:** "Good question — it's on the card's receipt line. We only ship a
-> detail when two independent, reputable sources agree, and this one cleared that bar.
-> Happy to point you to them."
+> **`ai_reply_draft`:** "Good question — it's on the card's receipt line. We only ship a
+> detail when two independent, reputable sources agree, and this one cleared that bar. Happy
+> to point you to them."
 >
-> *(If we can't immediately confirm which two sources → set `needs_research`, don't send.)*
+> *(If we can't immediately confirm which two sources → set `status = needs_research`, don't
+> send.)*
 
-### Example 3 — correction/challenge (route to research, do not argue)
+### Example 3 — correction_challenge (high risk, route to research, do not argue)
 
 > **Comment:** "This date is wrong, you clearly didn't fact-check."
 >
-> **Category:** correction/challenge **· Risk:** medium **· Status:** `needs_research`
+> `comment_type` = `correction_challenge` · `risk_level` = `high` · `status` =
+> `needs_research` · `source_check_required` = `true`
 >
-> **AI draft reply (held, not sent):** "Thanks for flagging it — we're double-checking the
+> **`ai_reply_draft` (held, not sent):** "Thanks for flagging it — we're double-checking the
 > sources now and will correct it if it's off. We'd rather be right than fast."
 >
 > *(No reply posts until we re-check our two sources. If the commenter is right, we fix the
-> post and thank them. If sensitive/disputed → escalate to Tanya.)*
+> post and thank them. Anything disputed → escalate to Tanya.)*
 
 ---
 
-## 7. Not wired up yet
+## 10. Not wired up yet
 
-This is deliberate. As of now the system **captures, classifies, drafts, and stages** — it
-does **not** publish replies to Instagram.
+This is deliberate. As of now the system's **design** captures, classifies, drafts, and
+stages into Supabase — it does **not** publish replies to Instagram.
 
 - The repo can publish *posts* today (`ig.js` uses `credentials.env` → `ACCESS_TOKEN` and
-  `IG_USER_ID`). Replying to *comments* is a **different Instagram permission and endpoint**
-  and is intentionally left off.
+  `IG_USER_ID`). Reading and replying to *comments* is a **different Instagram permission and
+  endpoint** and is intentionally left off.
 - Before any live reply posting is turned on, Tanya approves: (a) the added Instagram
-  permission scope, and (b) the posting step itself.
+  permission scope, and (b) the posting worker itself.
 - Until then, the approval gate is manual and that is correct — the AI's job ends at
-  `needs_review`.
+  `needs_review`, and the `ig_comment_replies` table is where every draft waits for Tanya.
 
 > Automate the labor, never the judgment. **Every public reply is Tanya's call.**
