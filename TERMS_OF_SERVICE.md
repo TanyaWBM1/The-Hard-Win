@@ -67,7 +67,6 @@ effective date at the top.
 
 ## Contact
 
-**Contact:** _[INSERT PUBLIC CONTACT EMAIL FOR THE HARD WIN]_
+**Contact:** support@tanyamlawson.com
 
-*(A public brand email should be placed here before this page is submitted to Meta. Do not put
-a private street address or personal email in this file.)*
+*(No private street address or personal email is stored in this file.)*

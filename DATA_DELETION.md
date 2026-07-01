@@ -33,7 +33,7 @@ review suggested replies before a human approves them.
 
 To ask us to delete the review data we hold about your comment(s), send a request to:
 
-**Contact:** _[INSERT PUBLIC CONTACT EMAIL FOR THE HARD WIN]_
+**Contact:** support@tanyamlawson.com
 
 Please include:
 
