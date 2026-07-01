@@ -276,6 +276,25 @@ The Hard Win build as of 2026-07-01.)*
   API only returns comments from *other* accounts. `comments_count` can be higher than the
   number of staged rows because it includes your own first-comment CTAs and any comment you
   leave as the brand. **Test with a second/outside account.**
+- **`comments_count` > 0 but the comments endpoint returns an empty array (no error) = Meta App
+  Mode is Development/Testing.** In Development mode the API only returns data (including
+  comments) from people who have a **role on the app** — admins, developers, and added
+  **testers**. Comments from arbitrary public accounts are filtered out of API responses even
+  though the UI shows them and `comments_count` includes them. This is *not* a scope or code
+  problem (it persists even with `instagram_business_manage_comments` granted).
+  - **How to spot it:** a real outside comment is visible in the Instagram app and
+    `comments_count` reflects it, but the comments endpoint returns `[]` — and it's the *same*
+    across every post (all counts > 0, all endpoints return 0). *(Seen 2026-07-01: an outside
+    comment from `ronnieee119` on the Toni Morrison post — `comments_count = 1` — returned
+    empty from the API; all 4 posts totaled 10 counted comments and 0 returned.)*
+  - **App Mode is not readable via the API** — confirm it visually: **Meta App Dashboard → the
+    App Mode toggle at the top (Development / Live).**
+  - **Fix / next test:** add the commenter as an **Instagram Tester** (App Dashboard → Roles →
+    add tester → they accept), *or* test with a second account that already has a tester/dev
+    role, *or* move the app toward **App Review / Live mode** — which is what's ultimately
+    required before comments from *arbitrary* public accounts are returned. Fastest confirmation:
+    add the tester, re-run `COMMENTS_LIVE=1 node comment-intake.js`; if it now stages, mode
+    filtering was the cause.
 - **The PC must be on for Windows Task Scheduler to run.** Scheduled tasks won't fire on a
   powered-off machine; "start when available" lets them catch up next time it's on. Running
   when logged out needs the task's logon type set to S4U (no stored password).
@@ -288,6 +307,7 @@ The Hard Win build as of 2026-07-01.)*
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
 | 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
+| 2026-07-01 | Comment visibility diagnostic (read-only) | Real outside comment from `ronnieee119` on the Toni Morrison post (media `18127259155715944`, `comments_count = 1`) is visible in the Instagram UI but the comments endpoint returns `[]` with no error. Across all 4 posts: 10 counted comments, 0 returned by the API. Scope is present, so this is **API visibility = Meta App in Development mode** (only role-users' comments are returned). | No posting, no Supabase writes, no workflow change. Next: add commenter as an Instagram Tester or move app to Live, then re-run intake. See §13. |
 
 *(Add a row every time you complete or correct a verified step. Keep it factual.)*
 
