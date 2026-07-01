@@ -226,6 +226,11 @@ Only after §2–§9 are solid.
 - [ ] **Only `approved` Supabase rows can ever be posted** — enforced by the worker and the
       database approval gate.
 
+> **A scan that finds 0 comments is still a successful scan** — it means the intake ran, read
+> the account's posts, and found nothing from outside accounts to stage. An empty result is
+> not an error; it just means no outside comments yet. *(Verified 2026-07-01: intake with the
+> new scoped token scanned 3 posts, found 0, staged nothing, posted nothing.)*
+
 > The boundary, always: the AI drafts; a human approves; only then can anything post.
 
 ---
@@ -241,12 +246,12 @@ The Hard Win build as of 2026-07-01.)*
 - [x] Repo pushed to GitHub
 - [x] Credentials + logs ignored (not tracked)
 - [x] Supabase tables live (posts + comment replies)
-- [ ] Token exchanged successfully (with comment scope) — *pending: re-auth in progress*
-- [ ] `whoami` confirms correct account **on the new scoped token** — *pending*
+- [x] Token exchanged successfully (with comment scope) — *verified 2026-07-01*
+- [x] `whoami` confirms correct account **on the new scoped token** — *thehardwin / MEDIA_CREATOR*
 - [x] Test post published
 - [x] First comment published
-- [x] Comment intake scans successfully (runs clean, no errors)
-- [ ] Outside-account test comment staged — *pending the comment scope*
+- [x] Comment intake scans successfully with the new scoped token — *runs clean; 0 comments is still a valid scan*
+- [ ] Outside-account test comment staged — *pending a comment from a different account*
 - [ ] Approved reply posted only after manual approval — *pending; dry-run verified*
 
 > This mix of `[x]` and `[ ]` is the SOP working as intended: it tells the truth about what is
@@ -282,7 +287,7 @@ The Hard Win build as of 2026-07-01.)*
 
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
-|      |                       |                   |       |
+| 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
 
 *(Add a row every time you complete or correct a verified step. Keep it factual.)*
 
