@@ -166,6 +166,25 @@ Create the repo and the document skeleton **before** writing automation.
 > missing, the comments endpoint returns an **empty list with no error** — easy to mistake for
 > "no comments." Request the scope up front.
 
+### 8a. Public compliance pages (required before publishing / app review)
+
+Meta app publishing and app review require **public URLs** for your policies. Create these
+as plain-language pages in the repo (and host them where Meta can reach them, e.g. GitHub
+Pages), then paste the URLs into the Meta Developer App settings:
+
+- [ ] **Privacy Policy** (`PRIVACY_POLICY.md`) — what public Instagram data is processed, why,
+      how it's protected, "AI drafts, humans approve," no selling data, logs kept private.
+- [ ] **Terms of Service** (`TERMS_OF_SERVICE.md`) — what the account is; comments may be
+      moderated and used to draft human-reviewed replies; not legal/medical/financial authority.
+- [ ] **Data Deletion** (`DATA_DELETION.md`) — what may be stored, how to request deletion, and
+      that Instagram-controlled content must be deleted by the user in the Instagram app.
+
+Rules for these pages: **plain language; no secrets** (no tokens, API keys, app secret,
+Supabase keys, credentials); **no private street address**; use a **public brand contact
+email or a clear placeholder** — never a personal email. This matters because arbitrary public
+accounts' comments only come through the API once the app is out of Development mode, and
+getting to Live mode goes through app review, which checks these pages.
+
 ---
 
 ## 9. Token exchange setup
@@ -307,6 +326,7 @@ The Hard Win build as of 2026-07-01.)*
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
 | 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
+| 2026-07-01 | Added public compliance pages for Meta app review | Created `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`, `DATA_DELETION.md`; linked from README; §8a added. Plain language; no secrets; contact left as a placeholder to fill with a public brand email | Needed before publishing / app review (and thus before public comments come through the API). |
 | 2026-07-01 | Comment visibility diagnostic (read-only) | Real outside comment from `ronnieee119` on the Toni Morrison post (media `18127259155715944`, `comments_count = 1`) is visible in the Instagram UI but the comments endpoint returns `[]` with no error. Across all 4 posts: 10 counted comments, 0 returned by the API. Scope is present, so this is **API visibility = Meta App in Development mode** (only role-users' comments are returned). | No posting, no Supabase writes, no workflow change. Next: add commenter as an Instagram Tester or move app to Live, then re-run intake. See §13. |
 
 *(Add a row every time you complete or correct a verified step. Keep it factual.)*

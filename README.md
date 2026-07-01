@@ -477,6 +477,21 @@ Current priorities:
 
 ---
 
+## Legal & Compliance
+
+Public policy pages used as URLs in the Meta Developer App settings (for app
+publishing / app review):
+
+- [Privacy Policy](PRIVACY_POLICY.md) — what public Instagram data is processed, why, and how it's protected.
+- [Terms of Service](TERMS_OF_SERVICE.md) — what the account is, and how comments are moderated.
+- [Data Deletion](DATA_DELETION.md) — what data may be stored and how to request its deletion.
+
+These pages contain **no secrets** — no tokens, API keys, app secrets, or private credentials.
+A public brand contact email should be filled into each page's contact line before submitting
+to Meta.
+
+---
+
 ## Project Principle
 
 The Hard Win is not just about content volume.
