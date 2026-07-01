@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "intake": "node comment-intake.js",
+    "replies:review": "node replies-review.js",
     "reply-worker": "node reply-worker.js"
   },
   "keywords": [],

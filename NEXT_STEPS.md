@@ -45,8 +45,13 @@ The loop, whenever you want to check comments:
    *(That reads the sample file. To pull your **real** comments instead:*
    `COMMENTS_LIVE=1 node comment-intake.js`*.)* It saves each comment to Supabase with a
    suggested reply and a status — it **never posts**.
-2. **Review in Supabase.** Open **Supabase → Table Editor → `ig_comment_replies`**. Look at
-   rows where `status = needs_review`. For each one you want to reply to:
+2. **Read the drafts (read-only).** Run: `npm run replies:review`
+   It prints every reply waiting on you (`needs_review`, `needs_research`, `failed`) right in
+   the terminal — commenter, comment, AI draft, risk, status, and any error. It **only
+   reads**: it never posts and never changes the database. *(You can still review in
+   **Supabase → Table Editor → `ig_comment_replies`** if you prefer.)*
+3. **Approve the ones you want.** In **Supabase → Table Editor → `ig_comment_replies`**, for
+   each row you want to reply to:
    - Happy with the draft? Copy it into `approved_reply`, set `status = approved`, put your
      name in `approved_by`.
    - Want to change it? Put your wording in `approved_reply` and set `status = approved`
@@ -54,12 +59,21 @@ The loop, whenever you want to check comments:
    - Don't reply? Leave it, or set `rejected` / `do_not_engage`.
    *(Spam, trolls, and disputed/history fights are auto-flagged and get **no** draft — leave
    those alone or mark `do_not_engage`.)*
-3. **See what would post (safe).** Run: `npm run reply-worker` — this is a **dry run**. It
+4. **See what would post (safe).** Run: `npm run reply-worker` — this is a **dry run**. It
    lists your approved replies and posts nothing.
-4. **Actually post (when you're ready).** Run:
+5. **Actually post (when you're ready).** Run:
    `REPLIES_LIVE=1 node reply-worker.js --confirm`
    It posts **only** the `approved` rows, then marks them `posted`. If one fails it marks it
    `failed` and writes the reason in `error_note`.
+
+**The whole loop, at a glance:**
+```bash
+npm run intake                              # 1. draft replies (never posts)
+npm run replies:review                      # 2. read what's waiting (read-only)
+                                            # 3. approve rows in Supabase
+npm run reply-worker                        # 4. dry run — see what would post
+REPLIES_LIVE=1 node reply-worker.js --confirm   # 5. actually post approved replies
+```
 
 > You approved turning this on. It's still built so **you** click go — the AI only ever
 > drafts; it never replies to the public on its own.
