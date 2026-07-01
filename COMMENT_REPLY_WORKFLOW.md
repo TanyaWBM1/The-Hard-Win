@@ -291,6 +291,16 @@ two-switch step (see below).
 > posts stored in Supabase. The default scan limit is **50** recent posts. Increase with
 > `MEDIA_SCAN_LIMIT=100` only when checking older posts or troubleshooting missed comments.
 
+> **Gotcha — the account's own comments aren't returned by the API.** Instagram's comments
+> endpoint only returns comments left by **other accounts**, never comments authored by the
+> account owner (@thehardwin) on its own posts. So the post's `comments_count` will include
+> our own "first comment" CTA lines and any comment you leave while logged in as the brand —
+> but intake will (correctly) not see them, and `comments_count` can be higher than the
+> number of rows staged. **To test the live path, comment from a different Instagram
+> account** (a second personal account or a friend), then run
+> `COMMENTS_LIVE=1 node comment-intake.js` → `npm run replies:review`. The comment will land
+> as `needs_review` with a low-risk draft. This is a platform rule, not a bug in intake.
+
 ### `reply-worker.js` — post approved replies (dry run by default)
 
 Finds `status = 'approved'` rows and, **only when explicitly switched live**, posts
