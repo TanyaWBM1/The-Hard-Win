@@ -40,8 +40,10 @@ approve it** — same rule as the cards. Full details in `COMMENT_REPLY_WORKFLOW
 armed but stays off until you run the worker with the two live switches (below).
 
 **Runs automatically:** a Windows scheduled task — **"The Hard Win - Daily Comment Intake"** —
-runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It pulls new
-comments and stages drafts as `needs_review` — it **never posts**. Output is appended to
+runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It runs **whether
+you're logged in or not** (logon type S4U — no password stored), as long as the PC is on; if
+it's off at 9:30, it runs the next time the machine is available. It pulls new comments and
+stages drafts as `needs_review` — it **never posts**. Output is appended to
 `comment-intake-log.txt`. So each morning you can just run `npm run replies:review` to see
 what's waiting; steps 1–2 below happen on their own. (To pause it:
 `Disable-ScheduledTask -TaskName "The Hard Win - Daily Comment Intake"`.)
