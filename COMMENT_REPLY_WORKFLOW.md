@@ -350,3 +350,25 @@ only ever drafts; the worker only posts rows Tanya has personally moved to `appr
 only when she runs it with both live switches. There is no always-on auto-reply.
 
 > Automate the labor, never the judgment. **Every public reply is Tanya's call.**
+
+---
+
+## 12. Instagram permissions & the messaging boundary
+
+The Hard Win's Instagram app intentionally keeps **all five** Business permissions configured
+(`instagram_business_basic`, `instagram_business_content_publish`,
+`instagram_business_manage_comments`, `instagram_business_manage_insights`,
+`instagram_business_manage_messages`). Plain-language explanations and the Meta-review
+justification live in `SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md` §8b.
+
+**This comment-reply system uses `instagram_business_manage_comments` only**, and it is
+strictly **public-comment focused**:
+
+- It reads **public** comments and posts **public** replies — and only after Tanya approves each
+  one.
+- It must **not** send Instagram **DMs or private replies**.
+  `instagram_business_manage_messages` is **reserved** for a future, separately-approved
+  workflow and is **not** wired into this system.
+- **Keeping a permission is not permission to use it.** Any new use of a permission (insights,
+  messaging, anything else) must be documented, approved, dry-run tested, and added to the SOP
+  **before** it goes live.

@@ -152,12 +152,14 @@ Create the repo and the document skeleton **before** writing automation.
       Redirect URIs**. Save it, refresh, and confirm it stuck. *(This is the settings area to
       use — not the generic "Facebook Login for Business" section; they look alike.)*
 - [ ] **Use the Meta-generated / correctly-built authorization URL** (see §9).
-- [ ] **Request only the permissions you need:**
+- [ ] **Request the permissions the system needs.** For a full content / comment / engagement
+      system like The Hard Win the **intentional set is all five** (see §8b for the reasoning
+      and plain-language explanations). Include all five in the authorization URL's `scope`:
       - `instagram_business_basic` — required base
       - `instagram_business_content_publish` — to post
       - `instagram_business_manage_comments` — to read comments **and** post replies
-      - `instagram_business_manage_insights` — only if you use analytics
-      - `instagram_business_manage_messages` — **only if messaging is intentionally needed**
+      - `instagram_business_manage_insights` — analytics / performance (reserved for future use)
+      - `instagram_business_manage_messages` — controlled messaging (reserved; **not** auto-DM)
 - [ ] **Record the exact redirect URI used** (see §13 — it must match everywhere).
 - [ ] **Do not store tokens in GitHub.** Tokens live only in local `credentials.env` (ignored).
 
@@ -205,7 +207,42 @@ https://tanyawbm1.github.io/The-Hard-Win/DATA_DELETION
 ```
 
 Paste those into the Meta Developer App settings (Privacy Policy URL, Terms of Service URL,
-and Data Deletion URL / instructions).
+and Data Deletion URL / instructions). *(For The Hard Win the public contact email on these
+pages is `support@tanyamlawson.com`.)*
+
+### 8b. The intentional five-permission set (The Hard Win)
+
+The Hard Win intentionally keeps **all five** Instagram Business permissions configured. It is
+not only a posting system — it is becoming a controlled Instagram **content, comment, review,
+and engagement** system. Posting and comment management are used **now**; insights and messages
+are **reserved** for future approved workflows. **Do not remove any of the five** from the docs
+or the OAuth `scope`.
+
+| Permission | Plain-language meaning | Status |
+|---|---|---|
+| `instagram_business_basic` | Lets the app read the professional Instagram account profile and media. | In use |
+| `instagram_business_content_publish` | Lets the app publish original feed/photo/video content on behalf of the account. | In use |
+| `instagram_business_manage_comments` | Lets the app read and manage comments on the professional account, supporting the approved comment-reply workflow. | In use |
+| `instagram_business_manage_insights` | Reserved for analytics and performance review, including future post/account insights. | Reserved |
+| `instagram_business_manage_messages` | Reserved for future controlled messaging workflows. **Not** currently used for automatic DM replies, and must **not** be wired into automation unless Tanya explicitly approves that future feature. | Reserved |
+
+**Boundary note.** Keeping a permission does **not** mean the workflow is allowed to use it
+automatically. Every new use of a permission must be **documented, approved, tested in dry-run
+mode first, and added to this SOP before live use.**
+
+**Safety rule (messaging).** The current comment-reply system is **public-comment focused**. It
+must **not** send Instagram DMs or private replies unless a separate approved DM/private-reply
+workflow is designed, documented, tested, and authorized.
+
+**Meta review justification.** If Meta review asks why each permission is needed, the current
+justification is:
+
+- **basic** — account/media access
+- **content_publish** — scheduled post publishing
+- **manage_comments** — public comment intake and human-approved replies
+- **manage_insights** — future analytics and performance reporting
+- **manage_messages** — reserved for future controlled inbox/message management, **not** active
+  auto-DM behavior
 
 ---
 
@@ -348,6 +385,7 @@ The Hard Win build as of 2026-07-01.)*
 | Date | Step added or changed | What was verified | Notes |
 |------|-----------------------|-------------------|-------|
 | 2026-07-01 | Instagram token re-authorized with the comment scope; live intake verified | `node ig.js exchange` succeeded; printed permissions included `instagram_business_manage_comments` (plus `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_messages`); `node ig.js whoami` = username **thehardwin**, account type **MEDIA_CREATOR**; `COMMENTS_LIVE=1 node comment-intake.js` scanned 3 recent posts, found 0 comments; `npm run replies:review` found nothing waiting; nothing was posted | Long-lived token saved only to local `credentials.env` (never committed). Outside-account comment test still pending. |
+| 2026-07-01 | Documented intentional five-permission Instagram set (§8b) | Decision recorded to keep all 5 Business permissions: basic + content_publish + manage_comments in use; manage_insights + manage_messages reserved for future approved workflows. Boundary + messaging safety rule + Meta-review justification documented. | Keeping a permission ≠ using it; new uses require doc + approval + dry-run + SOP entry first. Comment system stays public-comment only (no DMs). |
 | 2026-07-01 | Added public compliance pages for Meta app review | Created `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`, `DATA_DELETION.md`; linked from README; §8a added. Plain language; no secrets; contact left as a placeholder to fill with a public brand email | Needed before publishing / app review (and thus before public comments come through the API). |
 | 2026-07-01 | Comment visibility diagnostic (read-only) | Real outside comment from `ronnieee119` on the Toni Morrison post (media `18127259155715944`, `comments_count = 1`) is visible in the Instagram UI but the comments endpoint returns `[]` with no error. Across all 4 posts: 10 counted comments, 0 returned by the API. Scope is present, so this is **API visibility = Meta App in Development mode** (only role-users' comments are returned). | No posting, no Supabase writes, no workflow change. Next: add commenter as an Instagram Tester or move app to Live, then re-run intake. See §13. |
 

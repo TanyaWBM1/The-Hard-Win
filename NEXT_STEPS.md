@@ -49,6 +49,12 @@ account** (yours-as-brand comments don't get staged — see `COMMENT_REPLY_WORKF
 friend/second account comments, run `COMMENTS_LIVE=1 node comment-intake.js` → `npm run
 replies:review` and it should appear as `needs_review`.
 
+**Permissions:** the app intentionally keeps all **5** Instagram Business permissions (basic,
+content_publish, manage_comments, manage_insights, manage_messages). Only *comments* are used
+today; *insights* and *messages* are reserved for future approved workflows. The comment system
+is public-comment only and **never sends DMs**. Details: `COMMENT_REPLY_WORKFLOW.md` §12 and
+`SOP_BUILD_INSTAGRAM_AUTOMATION_SYSTEM.md` §8b.
+
 **Runs automatically:** a Windows scheduled task — **"The Hard Win - Daily Comment Intake"** —
 runs `run-intake.bat` **every day at 9:30 AM ET** (just after the poster). It runs **whether
 you're logged in or not** (logon type S4U — no password stored), as long as the PC is on; if
